@@ -149,25 +149,25 @@
       },
       showUpdateDialog:function (row) {
         this.admins=row
-        this.$axios.post('http://localhost:8089/ailybg/RoleCon/role_query')
+        this.$axios.post('RoleCon/role_query')
           .then(response=>{
-            if(response.data.length>=1){
-              this.role=response.data
+            if(response.length>=1){
+              this.role=response
             }
           })
       },
       showAddDialog:function(){
-        this.$axios.post('http://localhost:8089/ailybg/RoleCon/role_query')
+        this.$axios.post('RoleCon/role_query')
           .then(response=>{
-            if(response.data.length>=1){
-              this.role=response.data
+            if(response.length>=1){
+              this.role=response
             }
           })
       },
       addAdmins:function(){
-        this.$axios.post('http://localhost:8089/ailybg/AdminsCon/admins_insert',this.$qs.stringify(this.admins))
+        this.$axios.post('AdminsCon/admins_insert',this.$qs.stringify(this.admins))
           .then(response=>{
-            if(response.data>=1){
+            if(response>=1){
               this.$message({
                 showClose: true,
                 message: '恭喜你，添加成功',
@@ -184,9 +184,9 @@
           })
       },
       updateAdmins:function () {
-        this.$axios.post('http://localhost:8089/ailybg/AdminsCon/admins_update',this.$qs.stringify(this.admins))
+        this.$axios.post('AdminsCon/admins_update',this.$qs.stringify(this.admins))
           .then(response=>{
-            if(response.data>=1){
+            if(response>=1){
               this.$message({
                 showClose: true,
                 message: '恭喜你，修改成功',
@@ -203,9 +203,9 @@
           })
       },
       deleteAdmins:function(row){
-        this.$axios.post('http://localhost:8089/ailybg/AdminsCon/admins_delete',this.$qs.stringify(row))
+        this.$axios.post('AdminsCon/admins_delete',this.$qs.stringify(row))
           .then(response=>{
-            if(response.data>=1){
+            if(response>=1){
               this.$message({
                 showClose: true,
                 message: '恭喜你，删除成功',
@@ -222,9 +222,9 @@
           })
       },
       setStatus:function (row) {
-        this.$axios.post('http://localhost:8089/ailybg/AdminsCon/admins_update',this.$qs.stringify(row))
+        this.$axios.post('AdminsCon/admins_update',this.$qs.stringify(row))
           .then(response=>{
-            if(response.data>=1){
+            if(response>=1){
               this.$message({
                 showClose: true,
                 message: '恭喜你，修改成功',

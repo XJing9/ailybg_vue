@@ -46,13 +46,12 @@ export default {
     login:function () {
       this.loginLoading=true
       console.log(this.admins)
-      this.$axios.post('http://localhost:8089/ailybg/AdminsCon/admins_login',this.$qs.stringify(this.admins))
+      this.$axios.post('AdminsCon/admins_login',this.$qs.stringify(this.admins))
         .then(response=>{
-            if(response.data.length>=1){
-              this.$axios.post('http://localhost:8089/ailybg/PermissionCon/menu_one?rol_id='+response.data[0].rol_id)
+            if(response.length>=1){
+              this.$axios.post('PermissionCon/menu_one?rol_id='+response[0].rol_id)
                 .then(response2=>{
-                  console.log(response2.data)
-                  this.$router.push({name:'index',query:{menu_one:response2.data,admins:response.data}})
+                  this.$router.push({name:'index',query:{menu_one:response2,admins:response}})
                 })
             }else{
               this.$message({

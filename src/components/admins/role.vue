@@ -146,11 +146,11 @@
             str+=this.$refs.tree.getCheckedKeys()[p]
           }
         }
-        this.$axios.get('http://localhost:8089/ailybg/RoleCon/setAuthority',{
+        this.$axios.get('RoleCon/setAuthority',{
           params:{rol_id:this.rol_id,per_id:str}
         })
           .then(response=>{
-            if(response.data>=1){
+            if(response>=1){
               this.$message({
                 showClose: true,
                 message: '恭喜你，修改成功',
@@ -177,11 +177,11 @@
       },
       setAuthority:function(row){
         this.rol_id=row.rol_id;
-        this.$axios.post('http://localhost:8089/ailybg/PermissionCon/menu_query')
+        this.$axios.post('PermissionCon/menu_query')
           .then(response=>{
-            if(response.data.length>0){
-              this.authorityList=response.data;
-              this.$axios.post('http://localhost:8089/ailybg/RoleCon/queryRol_id?rol_id='+this.rol_id)
+            if(response.length>0){
+              this.authorityList=response;
+              this.$axios.post('RoleCon/queryRol_id?rol_id='+this.rol_id)
                 .then(response2=>{
                   for (let p=0;p<response2.data.length;p++){
                     this.$refs.tree.setChecked(response2.data[p].per_id, true, false)
@@ -191,9 +191,9 @@
           })
       },
       updateRole:function () {
-        this.$axios.post('http://localhost:8089/ailybg/RoleCon/role_update',this.$qs.stringify(this.role))
+        this.$axios.post('RoleCon/role_update',this.$qs.stringify(this.role))
           .then(response=>{
-            if(response.data>=1){
+            if(response>=1){
               this.$message({
                 showClose: true,
                 message: '恭喜你，修改成功',
@@ -210,9 +210,9 @@
           })
       },
       deleteRole:function (row) {
-        this.$axios.post('http://localhost:8089/ailybg/RoleCon/role_delete?rol_id='+row.rol_id)
+        this.$axios.post('RoleCon/role_delete?rol_id='+row.rol_id)
           .then(response=>{
-            if(response.data>=1){
+            if(response>=1){
               this.$message({
                 showClose: true,
                 message: '恭喜你，删除成功',
@@ -229,9 +229,9 @@
           })
       },
       addRole:function () {
-        this.$axios.post('http://localhost:8089/ailybg/RoleCon/role_insert',this.$qs.stringify(this.role))
+        this.$axios.post('RoleCon/role_insert',this.$qs.stringify(this.role))
           .then(response=>{
-            if(response.data>=1){
+            if(response>=1){
               this.$message({
                 showClose: true,
                 message: '恭喜你，添加成功',

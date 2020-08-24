@@ -170,9 +170,9 @@
         return 'background:#545c64;color:white'
       },
       setStatus:function (row) {
-        this.$axios.post('http://localhost:8089/ailybg/CustomerCon/customer_update',this.$qs.stringify(row))
+        this.$axios.post('CustomerCon/customer_update',this.$qs.stringify(row))
           .then(response=>{
-            if(response.data>=1){
+            if(response>=1){
               this.$message({
                 showClose: true,
                 message: '恭喜你，修改成功',

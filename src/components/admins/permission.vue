@@ -181,9 +181,9 @@ export default {
     },
     addTwoPermission:function(){
       console.log(this.twolist)
-      this.$axios.post('http://localhost:8089/ailybg/PermissionCon/menu_insert',this.$qs.stringify(this.twolist))
+      this.$axios.post('PermissionCon/menu_insert',this.$qs.stringify(this.twolist))
         .then(response=>{
-          if(response.data>=1){
+          if(response>=1){
             this.$message({
               showClose: true,
               message: '恭喜你，添加成功',
@@ -201,9 +201,9 @@ export default {
     },
     addPermission:function () {
       this.tableData.per_parent=0;
-      this.$axios.post('http://localhost:8089/ailybg/PermissionCon/menu_insert',this.$qs.stringify(this.tableData))
+      this.$axios.post('PermissionCon/menu_insert',this.$qs.stringify(this.tableData))
         .then(response=>{
-          if(response.data>=1){
+          if(response>=1){
             this.$message({
               showClose: true,
               message: '恭喜你，添加成功',
@@ -220,9 +220,9 @@ export default {
         })
     },
     updatePermission:function () {
-      this.$axios.post('http://localhost:8089/ailybg/PermissionCon/permission_update',this.$qs.stringify(this.tableData))
+      this.$axios.post('PermissionCon/permission_update',this.$qs.stringify(this.tableData))
         .then(response=>{
-          if(response.data>=1){
+          if(response>=1){
             this.$message({
               showClose: true,
               message: '恭喜你，修改成功',
@@ -240,9 +240,9 @@ export default {
     },
     deletePermission:function (row) {
       console.log(row.per_id);
-      this.$axios.post('http://localhost:8089/ailybg/PermissionCon/permission_delete?per_id='+row.per_id)
+      this.$axios.post('PermissionCon/permission_delete?per_id='+row.per_id)
         .then(response=>{
-          if(response.data>=1){
+          if(response>=1){
             this.$message({
               showClose: true,
               message: '恭喜你，删除成功',

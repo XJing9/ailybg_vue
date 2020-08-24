@@ -138,30 +138,30 @@ export default {
     Mg:function(clickname){
       console.log(clickname)
       if(clickname=='AdminsMg'){
-        this.$axios.post('http://localhost:8089/ailybg/AdminsCon/admins_query')
+        this.$axios.post('AdminsCon/admins_query')
           .then(response=>{
-            if(response.data.length>=1){
-              this.$router.push({name:'admins',query:{AdminsQuery:response.data}})
+            if(response.length>=1){
+              this.$router.push({name:'admins',query:{AdminsQuery:response}})
             }
           })
       }else if(clickname=='RoleMg'){
-        this.$axios.post('http://localhost:8089/ailybg/RoleCon/role_query')
+        this.$axios.post('RoleCon/role_query')
           .then(response=>{
-            if(response.data.length>=1){
-              this.$router.push({name:'role',query:{RoleQuery:response.data}})
+            if(response.length>=1){
+              this.$router.push({name:'role',query:{RoleQuery:response}})
             }
           })
       }else if(clickname=='PermissionMg'){
-        this.$axios.post('http://localhost:8089/ailybg/PermissionCon/menu_query')
+        this.$axios.post('PermissionCon/menu_query')
           .then(response=>{
-            console.log(response.data)
-            this.$router.push({name:'permission',query:{menu_one:response.data}})
+            console.log(response)
+            this.$router.push({name:'permission',query:{menu_one:response}})
           })
       }else if(clickname=='CustomerMg'){
-        this.$axios.post('http://localhost:8089/ailybg/CustomerCon/customer_selectAll')
+        this.$axios.post('CustomerCon/customer_selectAll')
           .then(response=>{
-            console.log(response.data)
-            this.$router.push({name:'customer',query:{customer:response.data}})
+            console.log(response)
+            this.$router.push({name:'customer',query:{customer:response}})
           })
       }
     },
@@ -187,9 +187,9 @@ export default {
       } else{
         this.adminsupdatestate=true;
         this.admins.adm_pwd=this.passwordForm.password
-        this.$axios.post('http://localhost:8089/ailybg/AdminsCon/admins_update',this.$qs.stringify(this.admins))
+        this.$axios.post('AdminsCon/admins_update',this.$qs.stringify(this.admins))
           .then(response=>{
-            if(response.data>=1){
+            if(response>=1){
               this.$message({
                 showClose: true,
                 message: '恭喜你，修改成功,请重新登录',
@@ -201,9 +201,9 @@ export default {
       }
     },
     updateAdminsPhone:function () {
-        this.$axios.post('http://localhost:8089/ailybg/AdminsCon/admins_update',this.$qs.stringify(this.admins))
+        this.$axios.post('AdminsCon/admins_update',this.$qs.stringify(this.admins))
           .then(response=>{
-            if(response.data>=1){
+            if(response>=1){
               this.$message({
                 showClose: true,
                 message: '恭喜你，修改成功',
