@@ -7,15 +7,15 @@
         background-color="#545c64"
         text-color="#fff"
         active-text-color="#red">
-        <el-submenu :index="value.per_url" v-for="(value, key, index) in menu_one">
+        <el-submenu :index="value.per_id" v-for="(value, key, index) in menu_one">
           <template slot="title">
             <i :class='value.per_icon'style="color:white"></i>
             <span>{{value.per_name}}</span>
           </template>
-          <el-menu-item v-if="value.listTwo" v-for="(child,index) in value.listTwo" :index="child.per_url">
+          <el-menu-item v-if="value.listTwo" v-for="(child,index) in value.listTwo" :index="value.per_id+'-'+child.per_id">
             <template slot="title">
               <i :class='child.per_icon' style="color:white;font-size: small"></i>
-              <span style="font-size: small" @click="Mg(child.per_click)">{{child.per_name}}</span>
+              <span style="font-size: small" @click="Mg(child.per_url)">{{child.per_name}}</span>
             </template>
           </el-menu-item>
         </el-submenu>
@@ -26,7 +26,7 @@
         <el-header>
           <el-dropdown style="float: right" @command="handlerCommand">
             <i class="el-icon-user-solid" style="color: white"></i>
-            <span class="a" style="color: white"><!--{{$route.query.admins[0].adm_name}}--></span>
+            <span class="a" style="color: white">{{this.$store.state.currentUser}}</span>
             <i class="el-icon-arrow-down" style="color: white"></i>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item command="personal">个人中心</el-dropdown-item>
@@ -115,7 +115,7 @@ export default {
   name: 'index',
   data () {
     return {
-      menu_one: this.$route.query.menu_one,
+      menu_one: JSON.parse(this.$route.query.menu_one),
       admins:this.$route.query.admins[0],
       personal_visible: false,
       addBtnLoading:false,
@@ -128,8 +128,16 @@ export default {
     }
   },
   created: function () {
+    this.isLogo();
   },
   methods: {
+    isLogo: function () {
+      if (sessionStorage.getItem('admins')) {
+        this.$store.commit('userStatus', sessionStorage.getItem('admins'))
+      } else {
+        this.$router.push('/login')
+      }
+    },
     handlerCommand:function (command) {
       if(command=='personal'){
         this.personal_visible=true;
@@ -140,9 +148,7 @@ export default {
       if(clickname=='AdminsMg'){
         this.$axios.post('AdminsCon/admins_query')
           .then(response=>{
-            if(response.length>=1){
-              this.$router.push({name:'admins',query:{AdminsQuery:response}})
-            }
+            this.$router.push({name:'admins',query:{Ph:response}})
           })
       }else if(clickname=='RoleMg'){
         this.$axios.post('RoleCon/role_query')
@@ -161,7 +167,22 @@ export default {
         this.$axios.post('CustomerCon/customer_selectAll')
           .then(response=>{
             console.log(response)
-            this.$router.push({name:'customer',query:{customer:response}})
+            this.$router.push({name:'customer',query:{Ph:response}})
+          })
+      }else if(clickname=='IndustrysMg'){
+        this.$axios.post('IndustrysCon/queryAll')
+          .then(response=>{
+            this.$router.push({name:'industrys',query:{Industrys:response}})
+          })
+      }else if(clickname=='IndustryMg'){
+        this.$axios.post('Indus/query')
+          .then(response=>{
+            this.$router.push({name:'industry',query:{Industry:response}})
+          })
+      }else if(clickname=='PositionMg'){
+        this.$axios.post('PosCon/pos_query')
+          .then(response=>{
+            this.$router.push({name:'position',query:{Position:response}})
           })
       }
     },

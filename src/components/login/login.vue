@@ -51,7 +51,9 @@ export default {
             if(response.length>=1){
               this.$axios.post('PermissionCon/menu_one?rol_id='+response[0].rol_id)
                 .then(response2=>{
-                  this.$router.push({name:'index',query:{menu_one:response2,admins:response}})
+                  this.$router.push({name:'index',query:{menu_one:JSON.stringify(response2),admins:response}})
+                  sessionStorage.setItem("admins",response[0].adm_name);
+                  this.$store.dispatch('setUser',response[0].adm_name);
                 })
             }else{
               this.$message({

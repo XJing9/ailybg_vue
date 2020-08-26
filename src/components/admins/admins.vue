@@ -9,7 +9,7 @@
       >新增</el-button>
       <el-table
         ref="multipleTable"
-        :data="this.$route.query.AdminsQuery"
+        :data="this.$route.query.Ph.rows"
         tooltip-effect="dark"
         style="width: 100%"
         :header-cell-style="rowClass"
@@ -60,6 +60,15 @@
           </template>
         </el-table-column>
       </el-table>
+      <!--分页-->
+      <el-pagination
+        align="center"
+        @current-change="handleCurrentChange"
+        :page-size="this.$route.query.Ph.pageSize"
+        :pager-count="11"
+        layout="prev, pager, next"
+        :total="this.$route.query.Ph.totalCount">
+      </el-pagination>
       <!--编辑管理员-->
       <el-dialog :close-on-press-escape="false" :close-on-click-modal="false" ref="dialogForm" top="3vh" center class="home-dialog" :visible.sync="updatevisible"
                  title="编辑管理员">
@@ -128,6 +137,7 @@
 <script>
   export default {
     name: 'admins',
+    inject:['reload'],
     data(){
       return {
         addBtnLoading:false,
@@ -146,6 +156,14 @@
       //设置指定行、列、具体单元格颜色
       cellStyle () {
         return 'background:#545c64;color:white'
+      },
+      handleCurrentChange(val) {
+        console.log("调到方法")
+        console.log(val)
+        this.$axios.post('AdminsCon/admins_query?pageNum=' + val + '')
+          .then(response => {
+            this.$router.push({name: 'admins', query: {Ph: response}})
+          })
       },
       showUpdateDialog:function (row) {
         this.admins=row
@@ -174,6 +192,7 @@
                 type: 'success'
               });
               this.addvisible=false;
+              //this.reload();
             }else{
               this.$message({
                 showClose: true,

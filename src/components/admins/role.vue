@@ -9,7 +9,7 @@
     >新增</el-button>
     <el-table
       ref="multipleTable"
-      :data="this.$route.query.RoleQuery"
+      :data="this.$route.query.RoleQuery.slice((currentPage-1)*PageSize,currentPage*PageSize)"
       tooltip-effect="dark"
       style="width: 100%"
       :header-cell-style="rowClass"
@@ -45,7 +45,11 @@
         </template>
       </el-table-column>
     </el-table>
-
+  <!--分页-->
+    <el-pagination  @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="pageSizes" :page-size="PageSize"
+                    layout="total, sizes, prev, pager, next, jumper"
+                    :total="totalCount">
+    </el-pagination>
     <!--修改角色-->
     <!-- 编辑表单 -->
     <el-dialog :close-on-press-escape="false" :close-on-click-modal="false" ref="dialogForm" top="3vh" center class="home-dialog" :visible.sync="updateRolevisible"
@@ -124,7 +128,14 @@
           children: 'listTwo',
           label: 'per_name'
         },
-        rol_id:0
+        rol_id:0,
+        currentPage: 1,
+        // 总条数，根据接口获取数据长度(注意：这里不能为空)
+        totalCount: this.$route.query.RoleQuery.length,
+        // 个数选择器（可修改）
+        pageSizes: [5, 9, 15, 30],
+        // 默认每页显示的条数（可修改）
+        PageSize: 5
       }
     },
     methods: {
@@ -135,6 +146,17 @@
       //设置指定行、列、具体单元格颜色
       cellStyle () {
         return 'background:#545c64;color:white'
+      },
+      handleSizeChange (val) {
+        // 改变每页显示的条数
+        this.PageSize = val
+        // 注意：在改变每页显示的条数时，要将页码显示到第一页
+        this.currentPage = 1
+      },
+      // 显示第几页
+      handleCurrentChange (val) {
+        // 改变默认的页数
+        this.currentPage = val
       },
       getCheckedKeys() {
         let str='';
@@ -183,8 +205,9 @@
               this.authorityList=response;
               this.$axios.post('RoleCon/queryRol_id?rol_id='+this.rol_id)
                 .then(response2=>{
-                  for (let p=0;p<response2.data.length;p++){
-                    this.$refs.tree.setChecked(response2.data[p].per_id, true, false)
+                  for (let p=0;p<response2.length;p++){
+                    console.log(response2[p].per_id)
+                    this.$refs.tree.setChecked(response2[p].per_id, true, false)
                   }
                 })
             }

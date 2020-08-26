@@ -1,17 +1,16 @@
 <template>
   <div>
     <el-button
-      @click="tableData={};addvisible=true"
+      @click="tableDatas={};addvisible=true"
       size="mini"
       icon="el-icon-plus"
       type="primary"
       style="float: left;background-color: cadetblue;border-color: cadetblue"
     >新增一级菜单</el-button>
     <el-table
-      :data="tableData"
+      :data="tableData.slice((currentPage-1)*PageSize,currentPage*PageSize)"
       style="width: 100%;margin-bottom: 20px;"
       row-key="per_id"
-
       :header-cell-style="rowClass"
       :cell-style="cellStyle"
       :tree-props="{children: 'listTwo', hasChildren: 'hasChildren'}">
@@ -51,11 +50,15 @@
         </template>
       </el-table-column>
     </el-table>
-
+    <!--分页-->
+    <el-pagination  @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="pageSizes" :page-size="PageSize"
+                    layout="total, sizes, prev, pager, next, jumper"
+                    :total="totalCount">
+    </el-pagination>
     <!--添加一级菜单-->
     <el-dialog :close-on-press-escape="false" :close-on-click-modal="false" ref="dialogForm" top="3vh" center class="home-dialog" :visible.sync="addvisible"
                title="添加菜单">
-      <el-form ref="configForm" :model="tableData" size="small" label-width="100px"
+      <el-form ref="configForm" :model="tableDatas" size="small" label-width="100px"
                style="width: 50%" class="form">
 
         <el-form-item label="菜单名称" prop="per_name">
@@ -66,9 +69,6 @@
         </el-form-item>
         <el-form-item label="图标" prop="per_icon">
           <el-input clearable v-model="tableData.per_icon" name="per_icon" size="small" placeholder="请输入图标"/>
-        </el-form-item>
-        <el-form-item label="点击事件名称" prop="per_click">
-          <el-input clearable v-model="tableData.per_click" name="per_click" size="small" placeholder="请输入点击事件名称"/>
         </el-form-item>
         <el-form-item>
           <el-button :loading="addBtnLoading" type="primary" size="small"
@@ -95,13 +95,10 @@
           <el-input clearable v-model="twolist.per_name" name="per_name" size="small" placeholder="请输入菜单名称"/>
         </el-form-item>
         <el-form-item label="菜单路径" prop="per_url">
-          <el-input clearable v-model="twolist.per_url" name="per_url" size="small" placeholder="请输入菜单路径"/>
+          <el-input  clearable v-model="twolist.per_url" name="per_url" size="small" placeholder="请输入菜单路径"/>
         </el-form-item>
         <el-form-item label="图标" prop="per_icon">
           <el-input clearable v-model="twolist.per_icon" name="per_icon" size="small" placeholder="请输入图标"/>
-        </el-form-item>
-        <el-form-item label="点击事件名称" prop="per_click">
-          <el-input clearable v-model="twolist.per_click" name="per_click" size="small" placeholder="请输入点击事件名称"/>
         </el-form-item>
         <el-form-item>
           <el-button :loading="addBtnLoading" type="primary" size="small"
@@ -117,20 +114,17 @@
     <!--修改菜单-->
     <el-dialog :close-on-press-escape="false" :close-on-click-modal="false" ref="dialogForm" top="3vh" center class="home-dialog" :visible.sync="updatevisible"
                title="修改菜单">
-      <el-form ref="configForm" :model="tableData" size="small" label-width="100px"
+      <el-form ref="configForm" :model="tableDatas" size="small" label-width="100px"
                style="width: 50%" class="form">
 
         <el-form-item label="菜单名称" prop="per_name">
-          <el-input clearable v-model="tableData.per_name" name="per_name" size="small" placeholder="请输入菜单名称"/>
+          <el-input clearable v-model="tableDatas.per_name" name="per_name" size="small" placeholder="请输入菜单名称"/>
         </el-form-item>
         <el-form-item label="菜单路径" prop="per_url">
-          <el-input clearable v-model="tableData.per_url" name="per_url" size="small" placeholder="请输入菜单路径"/>
+          <el-input clearable v-model="tableDatas.per_url" name="per_url" size="small" placeholder="请输入菜单路径"/>
         </el-form-item>
         <el-form-item label="图标" prop="per_icon">
-          <el-input clearable v-model="tableData.per_icon" name="per_icon" size="small" placeholder="请输入图标"/>
-        </el-form-item>
-        <el-form-item label="点击事件名称" prop="per_click">
-          <el-input clearable v-model="tableData.per_click" name="per_click" size="small" placeholder="请输入点击事件名称"/>
+          <el-input clearable v-model="tableDatas.per_icon" name="per_icon" size="small" placeholder="请输入图标"/>
         </el-form-item>
         <el-form-item>
           <el-button :loading="addBtnLoading" type="primary" size="small"
@@ -159,7 +153,15 @@ export default {
       onelist:{
         name:''
       },
-      twolist:{}
+      twolist:{},
+      tableDatas:{},
+      currentPage: 1,
+      // 总条数，根据接口获取数据长度(注意：这里不能为空)
+      totalCount: this.$route.query.menu_one.length,
+      // 个数选择器（可修改）
+      pageSizes: [5, 9, 15, 30],
+      // 默认每页显示的条数（可修改）
+      PageSize: 5
     }
   },
   methods: {
@@ -170,17 +172,26 @@ export default {
     // 设置指定行、列、具体单元格颜色
     cellStyle () {
       return 'background:#545c64;color:white'
+    },handleSizeChange (val) {
+      // 改变每页显示的条数
+      this.PageSize = val
+      // 注意：在改变每页显示的条数时，要将页码显示到第一页
+      this.currentPage = 1
+    },
+    // 显示第几页
+    handleCurrentChange (val) {
+      // 改变默认的页数
+      this.currentPage = val
     },
     showPermissionDialog:function(row){
       console.log(row)
-      this.tableData=row;
+      this.tableDatas=row;
     },
     showTwoMenu:function(row){
       this.twolist.per_parent=row.per_id
       this.onelist.name=row.per_name
     },
     addTwoPermission:function(){
-      console.log(this.twolist)
       this.$axios.post('PermissionCon/menu_insert',this.$qs.stringify(this.twolist))
         .then(response=>{
           if(response>=1){
@@ -201,7 +212,7 @@ export default {
     },
     addPermission:function () {
       this.tableData.per_parent=0;
-      this.$axios.post('PermissionCon/menu_insert',this.$qs.stringify(this.tableData))
+      this.$axios.post('PermissionCon/menu_insert',this.$qs.stringify(this.tableDatas))
         .then(response=>{
           if(response>=1){
             this.$message({
@@ -220,7 +231,7 @@ export default {
         })
     },
     updatePermission:function () {
-      this.$axios.post('PermissionCon/permission_update',this.$qs.stringify(this.tableData))
+      this.$axios.post('PermissionCon/permission_update',this.$qs.stringify(this.tableDatas))
         .then(response=>{
           if(response>=1){
             this.$message({

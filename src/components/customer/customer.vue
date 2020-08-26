@@ -2,7 +2,7 @@
   <div>
     <el-table
       ref="multipleTable"
-      :data="this.$route.query.customer"
+      :data="this.$route.query.Ph.rows"
       tooltip-effect="dark"
       style="width: 100%"
       :header-cell-style="rowClass"
@@ -150,6 +150,15 @@
         </template>-->
       </el-table-column>
     </el-table>
+    <!--分页-->
+    <el-pagination
+      align="center"
+      @current-change="handleCurrentChange"
+      :page-size="this.$route.query.Ph.pageSize"
+      :pager-count="11"
+      layout="prev, pager, next"
+      :total="this.$route.query.Ph.totalCount">
+    </el-pagination>
   </div>
 </template>
 
@@ -168,6 +177,12 @@
       //设置指定行、列、具体单元格颜色
       cellStyle () {
         return 'background:#545c64;color:white'
+      },
+      handleCurrentChange(val) {
+        this.$axios.post('CustomerCon/customer_selectAll?pageNum=' + val + '')
+          .then(response => {
+            this.$router.push({name: 'customer', query: {Ph:response}})
+          })
       },
       setStatus:function (row) {
         this.$axios.post('CustomerCon/customer_update',this.$qs.stringify(row))

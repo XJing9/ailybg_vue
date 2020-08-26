@@ -34,6 +34,21 @@ export default new Router({
           path:'customer',
           name:'customer',
           component:()=>import('../components/customer/customer')
+        },
+        {
+          path:'industrys',
+          name:'industrys',
+          component:()=>import('../components/industry/industrys')
+        },
+        {
+          path:'industry',
+          name:'industry',
+          component:()=>import('../components/industry/industry')
+        },
+        {
+          path:'position',
+          name:'position',
+          component:()=>import('../components/industry/position')
         }
       ]
     }
