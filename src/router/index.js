@@ -2,7 +2,17 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 Vue.use(Router)
+/*解决刷新报错*/
+/*const originalPush = VueRouter.prototype.push
 
+VueRouter.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch(err => err)
+}*/
+// 解决ElementUI导航栏中的vue-router在3.0版本以上重复点菜单报错问题
+const originalPush = Router.prototype.push
+Router.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch(err => err)
+}
 export default new Router({
   routes: [
     {
@@ -49,6 +59,16 @@ export default new Router({
           path:'position',
           name:'position',
           component:()=>import('../components/industry/position')
+        },
+        {
+          path:'position',
+          name:'position',
+          component:()=>import('../components/entre/entrepreneur')
+        },
+        {
+          path:'area',
+          name:'area',
+          component:()=>import('../components/sys/area')
         }
       ]
     }

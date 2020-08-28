@@ -6,14 +6,14 @@
         default-active="2"
         background-color="#545c64"
         text-color="#fff"
-        active-text-color="#red">
-        <el-submenu :index="value.per_id" v-for="(value, key, index) in menu_one">
+        active-text-color="#ffd04b">
+        <el-submenu :index="value.per_id+''" v-for="(value, key, index) in menu_one">
           <template slot="title">
             <i :class='value.per_icon'style="color:white"></i>
             <span>{{value.per_name}}</span>
           </template>
-          <el-menu-item v-if="value.listTwo" v-for="(child,index) in value.listTwo" :index="value.per_id+'-'+child.per_id">
-            <template slot="title">
+          <el-menu-item v-if="child.ischecked==1" v-for="(child,index) in value.listTwo" :index="value.per_id+'-'+child.per_id">
+            <template slot="title" >
               <i :class='child.per_icon' style="color:white;font-size: small"></i>
               <span style="font-size: small" @click="Mg(child.per_url)">{{child.per_name}}</span>
             </template>
@@ -26,7 +26,7 @@
         <el-header>
           <el-dropdown style="float: right" @command="handlerCommand">
             <i class="el-icon-user-solid" style="color: white"></i>
-            <span class="a" style="color: white">{{this.$store.state.currentUser}}</span>
+            <span class="a" style="color: white">{{this.admins[0].adm_name}}</span>
             <i class="el-icon-arrow-down" style="color: white"></i>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item command="personal">个人中心</el-dropdown-item>
@@ -111,117 +111,73 @@
 </template>
 
 <script>
-export default {
-  name: 'index',
-  data () {
-    return {
-      menu_one: JSON.parse(this.$route.query.menu_one),
-      admins:this.$route.query.admins[0],
-      personal_visible: false,
-      addBtnLoading:false,
-      passwordForm: {
-        oldPassword: '',
-        password: '',
-        rePassword: '',
+  export default {
+    name: 'index',
+    data () {
+      return {
+        menu_one: '',
+        admins:'',
+        personal_visible: false,
+        addBtnLoading:false,
+        passwordForm: {
+          oldPassword: '',
+          password: '',
+          rePassword: '',
+        },
+        activeName:'config'
+      }
+    },
+    created: function () {
+      //
+      this.admins=JSON.parse(localStorage.getItem("admins"));
+      this.menu_one=JSON.parse(localStorage.getItem("menu_one"))
+    },
+    methods: {
+      handlerCommand:function (command) {
+        if(command=='personal'){
+          this.personal_visible=true;
+        }
       },
-      activeName:'config'
-    }
-  },
-  created: function () {
-    this.isLogo();
-  },
-  methods: {
-    isLogo: function () {
-      if (sessionStorage.getItem('admins')) {
-        this.$store.commit('userStatus', sessionStorage.getItem('admins'))
-      } else {
-        this.$router.push('/login')
-      }
-    },
-    handlerCommand:function (command) {
-      if(command=='personal'){
-        this.personal_visible=true;
-      }
-    },
-    Mg:function(clickname){
-      console.log(clickname)
-      if(clickname=='AdminsMg'){
-        this.$axios.post('AdminsCon/admins_query')
-          .then(response=>{
-            this.$router.push({name:'admins',query:{Ph:response}})
-          })
-      }else if(clickname=='RoleMg'){
-        this.$axios.post('RoleCon/role_query')
-          .then(response=>{
-            if(response.length>=1){
-              this.$router.push({name:'role',query:{RoleQuery:response}})
-            }
-          })
-      }else if(clickname=='PermissionMg'){
-        this.$axios.post('PermissionCon/menu_query')
-          .then(response=>{
-            console.log(response)
-            this.$router.push({name:'permission',query:{menu_one:response}})
-          })
-      }else if(clickname=='CustomerMg'){
-        this.$axios.post('CustomerCon/customer_selectAll')
-          .then(response=>{
-            console.log(response)
-            this.$router.push({name:'customer',query:{Ph:response}})
-          })
-      }else if(clickname=='IndustrysMg'){
-        this.$axios.post('IndustrysCon/queryAll')
-          .then(response=>{
-            this.$router.push({name:'industrys',query:{Industrys:response}})
-          })
-      }else if(clickname=='IndustryMg'){
-        this.$axios.post('Indus/query')
-          .then(response=>{
-            this.$router.push({name:'industry',query:{Industry:response}})
-          })
-      }else if(clickname=='PositionMg'){
-        this.$axios.post('PosCon/pos_query')
-          .then(response=>{
-            this.$router.push({name:'position',query:{Position:response}})
-          })
-      }
-    },
-    showPersonaldialog: function () {
-      this.personal_visible = true
-    },
-    updateAdminsPwd:function(){
-      this.addBtnLoading=true
-      if(this.passwordForm.password!=this.passwordForm.rePassword){
-        this.$message({
-          showClose: true,
-          message: '两次密码不一致哦！',
-          type: 'error'
-        });
-        this.addBtnLoading=false
-      }else if(this.passwordForm.oldPassword!=this.admins.adm_pwd){
-        this.$message({
-          showClose: true,
-          message: '原密码不正确哦！',
-          type: 'error'
-        });
-        this.addBtnLoading=false
-      } else{
-        this.adminsupdatestate=true;
-        this.admins.adm_pwd=this.passwordForm.password
-        this.$axios.post('AdminsCon/admins_update',this.$qs.stringify(this.admins))
-          .then(response=>{
-            if(response>=1){
-              this.$message({
-                showClose: true,
-                message: '恭喜你，修改成功,请重新登录',
-                type: 'success'
-              });
-              this.$router.push({name:'login'})
-            }
-          })
-      }
-    },
-    updateAdminsPhone:function () {
+      Mg:function(clickname){
+        console.log(clickname)
+        this.$router.push({name:clickname});
+      },
+      showPersonaldialog: function () {
+        this.personal_visible = true
+      },
+      updateAdminsPwd:function(){
+        this.addBtnLoading=true
+        if(this.passwordForm.password!=this.passwordForm.rePassword){
+          this.$message({
+            showClose: true,
+            message: '两次密码不一致哦！',
+            type: 'error'
+          });
+          this.addBtnLoading=false
+        }else if(this.passwordForm.oldPassword!=this.admins.adm_pwd){
+          this.$message({
+            showClose: true,
+            message: '原密码不正确哦！',
+            type: 'error'
+          });
+          this.addBtnLoading=false
+        } else{
+          this.adminsupdatestate=true;
+          this.admins.adm_pwd=this.passwordForm.password
+          this.$axios.post('AdminsCon/admins_update',this.$qs.stringify(this.admins))
+            .then(response=>{
+              if(response>=1){
+                this.$message({
+                  showClose: true,
+                  message: '恭喜你，修改成功,请重新登录',
+                  type: 'success'
+                });
+                this.$router.push({name:'login'})
+              }
+            })
+        }
+      },
+      updateAdminsPhone:function () {
         this.$axios.post('AdminsCon/admins_update',this.$qs.stringify(this.admins))
           .then(response=>{
             if(response>=1){
@@ -234,13 +190,12 @@ export default {
             }
           })
       }
+    }
   }
-}
 </script>
 
 <style scoped>
   #con{
-
     width:100%;
     height:800px;
     background-color: #545c64;
@@ -272,5 +227,4 @@ export default {
     background-color: #545c64;
     margin:10px 30px;
   }
-
 </style>

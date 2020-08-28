@@ -9,7 +9,7 @@
     >新增</el-button>
     <el-table
       ref="multipleTable"
-      :data="this.$route.query.RoleQuery.slice((currentPage-1)*PageSize,currentPage*PageSize)"
+      :data="RoleQuery.slice((currentPage-1)*PageSize,currentPage*PageSize)"
       tooltip-effect="dark"
       style="width: 100%"
       :header-cell-style="rowClass"
@@ -118,6 +118,7 @@
     name: 'role',
     data(){
       return {
+        RoleQuery:'',
         updateRolevisible:false,
         addRolevisible:false,
         role:{},
@@ -131,12 +132,15 @@
         rol_id:0,
         currentPage: 1,
         // 总条数，根据接口获取数据长度(注意：这里不能为空)
-        totalCount: this.$route.query.RoleQuery.length,
+        totalCount: 0,
         // 个数选择器（可修改）
         pageSizes: [5, 9, 15, 30],
         // 默认每页显示的条数（可修改）
         PageSize: 5
       }
+    },
+    created:function(){
+      this.showRole();
     },
     methods: {
       //设置表头的颜色
@@ -158,7 +162,17 @@
         // 改变默认的页数
         this.currentPage = val
       },
+      showRole:function(){
+        this.$axios.post('RoleCon/role_query')
+          .then(response=>{
+            if(response.length>=1){
+              this.RoleQuery=response;
+              this.totalCount=response.length;
+            }
+          })
+      },
       getCheckedKeys() {
+
         let str='';
         for (let p=0;p<this.$refs.tree.getCheckedKeys().length;p++) {
           console.log(this.$refs.tree.getCheckedKeys()[p]);
@@ -168,6 +182,7 @@
             str+=this.$refs.tree.getCheckedKeys()[p]
           }
         }
+        console.log(this.$refs.tree.getCheckedNodes())
         this.$axios.get('RoleCon/setAuthority',{
           params:{rol_id:this.rol_id,per_id:str}
         })
@@ -179,6 +194,7 @@
                 type: 'success'
               });
               this.authorityVisible=false;
+              this.showRole();
             }else{
               this.$message({
                 showClose: true,
@@ -223,6 +239,8 @@
                 type: 'success'
               });
               this.updateRolevisible=false;
+              this.showRole();
+
             }else{
               this.$message({
                 showClose: true,
@@ -241,7 +259,7 @@
                 message: '恭喜你，删除成功',
                 type: 'success'
               });
-              this.updateRolevisible=false;
+              this.showRole();
             }else{
               this.$message({
                 showClose: true,
@@ -249,6 +267,7 @@
                 type: 'error'
               });
             }
+
           })
       },
       addRole:function () {
@@ -261,6 +280,7 @@
                 type: 'success'
               });
               this.addRolevisible=false;
+              this.showRole();
             }else{
               this.$message({
                 showClose: true,

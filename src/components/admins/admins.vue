@@ -9,7 +9,7 @@
       >新增</el-button>
       <el-table
         ref="multipleTable"
-        :data="this.$route.query.Ph.rows"
+        :data="admList.slice((currentPage-1)*PageSize,currentPage*PageSize)"
         tooltip-effect="dark"
         style="width: 100%"
         :header-cell-style="rowClass"
@@ -47,6 +47,8 @@
           <template slot-scope="{row}">
             <!--{{ row.cus_state === 0 ? '正常' : '禁用' }}-->
             <el-switch v-model="row.adm_state" :active-value="1"
+                       active-color="#13ce66"
+                       inactive-color="#ff4949"
                        :inactive-value="2" size="small"
                        @change="setStatus(row)"/>
           </template>
@@ -61,13 +63,9 @@
         </el-table-column>
       </el-table>
       <!--分页-->
-      <el-pagination
-        align="center"
-        @current-change="handleCurrentChange"
-        :page-size="this.$route.query.Ph.pageSize"
-        :pager-count="11"
-        layout="prev, pager, next"
-        :total="this.$route.query.Ph.totalCount">
+      <el-pagination  @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="pageSizes" :page-size="PageSize"
+                      layout="total, sizes, prev, pager, next, jumper"
+                      :total="totalCount">
       </el-pagination>
       <!--编辑管理员-->
       <el-dialog :close-on-press-escape="false" :close-on-click-modal="false" ref="dialogForm" top="3vh" center class="home-dialog" :visible.sync="updatevisible"
@@ -137,17 +135,36 @@
 <script>
   export default {
     name: 'admins',
-    inject:['reload'],
     data(){
       return {
         addBtnLoading:false,
         updatevisible:false,
         addvisible:false,
         admins:{},
-        role:{}
+        role:{},
+        admList:'',
+        currentPage: 1,
+        // 总条数，根据接口获取数据长度(注意：这里不能为空)
+        totalCount:0,
+        // 个数选择器（可修改）
+        pageSizes: [5, 9, 15, 30],
+        // 默认每页显示的条数（可修改）
+        PageSize: 5
       }
     },
+    created:function(){
+      this.showAdmins();
+    },
     methods: {
+      /*显示数据*/
+      showAdmins:function(){
+        this.$axios.post('AdminsCon/admins_query')
+          .then(response=>{
+            this.$router.push({name:'admins'})
+            this.admList=response;
+            this.totalCount=response.length;
+          })
+      },
       //设置表头的颜色
       rowClass () {
 
@@ -157,13 +174,16 @@
       cellStyle () {
         return 'background:#545c64;color:white'
       },
-      handleCurrentChange(val) {
-        console.log("调到方法")
-        console.log(val)
-        this.$axios.post('AdminsCon/admins_query?pageNum=' + val + '')
-          .then(response => {
-            this.$router.push({name: 'admins', query: {Ph: response}})
-          })
+      handleSizeChange (val) {
+        // 改变每页显示的条数
+        this.PageSize = val
+        // 注意：在改变每页显示的条数时，要将页码显示到第一页
+        this.currentPage = 1
+      },
+      // 显示第几页
+      handleCurrentChange (val) {
+        // 改变默认的页数
+        this.currentPage = val
       },
       showUpdateDialog:function (row) {
         this.admins=row
@@ -192,7 +212,7 @@
                 type: 'success'
               });
               this.addvisible=false;
-              //this.reload();
+              this.showAdmins()
             }else{
               this.$message({
                 showClose: true,
@@ -212,6 +232,7 @@
                 type: 'success'
               });
               this.updatevisible=false;
+              this.showAdmins()
             }else{
               this.$message({
                 showClose: true,
@@ -231,6 +252,7 @@
                 type: 'success'
               });
               this.updateRolevisible=false;
+              this.showAdmins()
             }else{
               this.$message({
                 showClose: true,
@@ -250,6 +272,7 @@
                 type: 'success'
               });
               this.updateRolevisible=false;
+              this.showAdmins()
             }else{
               this.$message({
                 showClose: true,

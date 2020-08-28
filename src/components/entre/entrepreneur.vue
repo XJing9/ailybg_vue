@@ -1,11 +1,11 @@
 <template>
-  <div>dd</div>
+
 </template>
 
 <script>
-export default {
-  name: 'test'
-}
+  export default {
+    name: 'entrepreneur'
+  }
 </script>
 
 <style scoped>

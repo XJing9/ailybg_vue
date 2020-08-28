@@ -145,7 +145,7 @@ export default {
   name: 'permission',
   data () {
     return {
-      tableData: this.$route.query.menu_one,
+      tableData:'',
       addvisible:false,
       addBtnLoading:false,
       updatevisible:false,
@@ -157,14 +157,25 @@ export default {
       tableDatas:{},
       currentPage: 1,
       // 总条数，根据接口获取数据长度(注意：这里不能为空)
-      totalCount: this.$route.query.menu_one.length,
+      totalCount: 0,
       // 个数选择器（可修改）
       pageSizes: [5, 9, 15, 30],
       // 默认每页显示的条数（可修改）
       PageSize: 5
     }
   },
+  created:function(){
+    this.showPermission();
+  },
   methods: {
+    /*显示菜单数据信息*/
+    showPermission:function(){
+      this.$axios.post('PermissionCon/menu_query')
+        .then(response=>{
+          this.tableData=response;
+          this.totalCount=response.length;
+        })
+    },
     // 设置表头的颜色
     rowClass () {
       return 'background:#545c64;color:white'
@@ -201,6 +212,7 @@ export default {
               type: 'success'
             });
             this.addtwovisible=false;
+            this.showPermission();
           }else{
             this.$message({
               showClose: true,
@@ -221,6 +233,7 @@ export default {
               type: 'success'
             });
             this.addvisible=false;
+            this.showPermission();
           }else{
             this.$message({
               showClose: true,
@@ -240,6 +253,7 @@ export default {
               type: 'success'
             });
             this.updatevisible=false;
+            this.showPermission();
           }else{
             this.$message({
               showClose: true,
@@ -260,6 +274,7 @@ export default {
               type: 'success'
             });
             this.updatevisible=false;
+            this.showPermission();
           }else{
             this.$message({
               showClose: true,
