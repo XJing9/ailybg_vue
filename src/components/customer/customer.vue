@@ -155,8 +155,8 @@
             <el-button style="background-color:darkgrey;border-color: darkgrey" type="primary" size="mini" icon="el-icon-edit"></el-button>
             <el-button style="background-color: indianred;border-color: indianred" type="danger" size="mini" class="el-icon-delete"></el-button>
           </el-row>
-        </template>-->
-      </el-table-column>
+        </template>
+      </el-table-column>-->
     </el-table>
     <!--分页-->
     <el-pagination  @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="pageSizes" :page-size="PageSize"

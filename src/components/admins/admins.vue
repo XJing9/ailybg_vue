@@ -266,6 +266,7 @@
         this.$axios.post('AdminsCon/admins_update',this.$qs.stringify(row))
           .then(response=>{
             if(response>=1){
+              console.info(response)
               this.$message({
                 showClose: true,
                 message: '恭喜你，修改成功',

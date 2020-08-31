@@ -81,12 +81,12 @@
     background-position: center center;
     background-size: cover;
     background-image: url(../../assets/img/login2.jpg);
+  }
   .box {
     width: 350px;
     position: absolute;
     right: 40%;
     top: 30%;
-  }
   }
   .login-container .box {
     width: 350px;

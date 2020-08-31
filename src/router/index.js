@@ -61,14 +61,39 @@ export default new Router({
           component:()=>import('../components/industry/position')
         },
         {
-          path:'position',
-          name:'position',
+          path:'entre',
+          name:'entre',
           component:()=>import('../components/entre/entrepreneur')
+        },
+        {
+          path:'welfare',
+          name:'welfare',
+          component:()=>import('../components/entre/welfare')
+        },
+        {
+          path:'issue_position',
+          name:'issue_position',
+          component:()=>import('../components/entre/issue_position')
+        },
+        {
+          path:'interview',
+          name:'interview',
+          component:()=>import('../components/entre/interview')
+        },
+        {
+          path:'speciality',
+          name:'speciality',
+          component:()=>import('../components/entre/speciality')
         },
         {
           path:'area',
           name:'area',
           component:()=>import('../components/sys/area')
+        },
+        {
+          path:'complaint',
+          name:'complaint',
+          component:()=>import('../components/complaint/complaint')
         }
       ]
     }
