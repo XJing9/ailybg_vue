@@ -1,0 +1,311 @@
+<template>
+  <div>
+    <el-button
+      @click="updateIndList={};addvisible=true;addInit()"
+      size="mini"
+      icon="el-icon-plus"
+      type="primary"
+      style="float: left;background-color: cadetblue;border-color: cadetblue"
+    >新增</el-button>
+    <el-table
+      :data="indList.slice((currentPage-1)*PageSize,currentPage*PageSize)"
+      style="width: 100%;margin-bottom: 20px;"
+      :header-cell-style="rowClass"
+      :cell-style="cellStyle">
+      <el-table-column
+        prop="ord_id"
+        label="编号"
+        >
+      </el-table-column>
+      <el-table-column
+        prop="cus_name"
+        label="用户姓名"
+        show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column
+        prop="pay_name"
+        label="购买业务"
+        show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column
+        prop="ord_time"
+        label="购买时间"
+        show-overflow-tooltip
+      width="95px">
+      </el-table-column>
+      <el-table-column
+        prop="ord_method"
+        label="支付方式"
+        show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column
+        prop="ord_totalprice"
+        label="商品总价"
+        show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column
+        prop="ord_payment"
+        label="实际付款"
+        show-overflow-tooltip>
+      </el-table-column>
+
+      <el-table-column prop="ord_state" label="付款状态">
+        <template slot-scope="{row: {ord_state}}">
+          <span v-if="+ord_state===1">已付款</span>
+          <span v-else-if="+ord_state===0">未付款</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="ord_states" label="完成状态">
+        <template slot-scope="{row: {ord_states}}">
+          <span v-if="+ord_states===1">已完成</span>
+          <span v-else-if="+ord_states===0">未完成</span>
+        </template>
+      </el-table-column>
+
+
+      <!--<el-table-column show-overflow-tooltip prop="ind_state" fixed="right" label="状态" align="center" width="120">
+        <template slot-scope="{row}">
+          &lt;!&ndash;{{ row.cus_state === 0 ? '正常' : '禁用' }}&ndash;&gt;
+          <el-switch v-model="row.ind_state" :active-value="1"
+                     :inactive-value="2" size="small"
+                     @change="setStatus(row)"/>
+        </template>
+      </el-table-column>-->
+      <el-table-column label="操作" fixed="right" width="260px">
+        <template slot-scope="scope">
+          <el-row>
+            <el-button style="background-color:darkgrey;border-color: darkgrey" type="primary" size="mini" icon="el-icon-edit" @click="updatevisible=true;showPermissionDialog(scope.row)"></el-button>
+            <el-button style="background-color: indianred;border-color: indianred" type="danger" size="mini" class="el-icon-delete" @click="deleteInd(scope.row)"></el-button>
+            <el-button v-if="scope.row.per_parent ==0" type="primary" size="mini" icon="el-icon-plus"
+                       class="add" @click="addtwovisible=true;showTwoMenu(scope.row)">添加子级
+            </el-button>
+          </el-row>
+        </template>
+      </el-table-column>
+    </el-table>
+    <!--分页-->
+    <el-pagination  @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="pageSizes" :page-size="PageSize"
+                    layout="total, sizes, prev, pager, next, jumper"
+                    :total="totalCount">
+    </el-pagination>
+
+    <!--添加职业类型-->
+    <el-dialog :close-on-press-escape="false" :close-on-click-modal="false" ref="dialogForm" top="3vh" center class="home-dialog" :visible.sync="addvisible"
+               title="添加服务">
+      <el-form ref="configForm" :model="updateIndList" size="small" label-width="100px"
+               style="width: 50%" class="form">
+
+        <el-form-item label="服务名称" prop="pay_name">
+          <el-input clearable v-model="updateIndList.pay_name" name="pay_name" size="small" placeholder="请输入服务名称"/>
+        </el-form-item>
+
+        <el-form-item label="价格" prop="pay_price">
+          <el-input clearable v-model="updateIndList.pay_price" name="pay_price" size="small" placeholder="请输入服务价格"/>
+        </el-form-item>
+        <!--<el-form-item label="服务价格" prop="pay_price">-->
+
+        <!--<el-select v-model="updateIndList.indu_id" placeholder="请选择">
+          <el-option
+            v-for="item in induList"
+            :key="item.indu_id"
+            :label="item.indu_name"
+            :value="item.indu_id">
+          </el-option>
+        </el-select>-->
+
+        <!--</el-form-item>-->
+        <el-form-item>
+          <el-button :loading="addBtnLoading" type="primary" size="small"
+                     @click="addInd">立即提交
+          </el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+
+    <!--修改职业类型-->
+    <el-dialog :close-on-press-escape="false" :close-on-click-modal="false" ref="dialogForm" top="3vh" center class="home-dialog" :visible.sync="updatevisible"
+               title="修改服务">
+      <el-form ref="configForm" :model="updateIndList" size="small" label-width="100px"
+               style="width: 50%" class="form">
+
+        <el-form-item label="服务名称" prop="pay_name">
+          <el-input clearable v-model="updateIndList.pay_name" name="pay_name" size="small" placeholder="请输入服务名称"/>
+        </el-form-item>
+
+
+        <el-form-item label="价格" prop="pay_price">
+          <el-input clearable v-model="updateIndList.pay_price" name="pay_price" size="small" placeholder="请输入价格"/>
+        </el-form-item>
+        <!-- <el-form-item label="价格" prop="pay_price">
+
+           <el-select v-model="updateIndList.indu_id" placeholder="请选择">
+             <el-option
+               v-for="item in induList"
+               :key="item.indu_id"
+               :label="item.indu_name"
+               :value="item.indu_id">
+             </el-option>
+           </el-select>
+
+         </el-form-item>-->
+        <el-form-item>
+          <el-button :loading="updateBtnLoading" type="primary" size="small"
+                     @click="updateInd()">立即提交
+          </el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+  export default {
+    name: 'order',
+    data () {
+      return {
+        currentPage: 1,
+        // 总条数，根据接口获取数据长度(注意：这里不能为空)
+        totalCount: 0,
+        // 个数选择器（可修改）
+        pageSizes: [5, 9, 15, 30],
+        // 默认每页显示的条数（可修改）
+        PageSize: 5,
+        indList:{},
+        updateIndList:{},
+        induList:{},
+        addvisible:false,
+        updatevisible:false,
+        addBtnLoading:false,
+        updateBtnLoading:false
+      }
+    },
+    created: function () {
+      this.showInd();
+    },
+    methods: {
+      /* 显示数据 */
+      showInd: function () {
+        this.$axios.post('Order/query')
+          .then(response => {
+            this.indList=response;
+            this.totalCount=response.length;
+          })
+      },
+      handleSizeChange (val) {
+        // 改变每页显示的条数
+        this.PageSize = val
+        // 注意：在改变每页显示的条数时，要将页码显示到第一页
+        this.currentPage = 1
+      },
+      // 显示第几页
+      handleCurrentChange (val) {
+        // 改变默认的页数
+        this.currentPage = val
+      },
+      // 设置表头的颜色
+      rowClass () {
+        return 'background:#545c64;color:white'
+      },
+      // 设置指定行、列、具体单元格颜色
+      cellStyle () {
+        return 'background:#545c64;color:white'
+      },
+      /* /!*添加初始化*!/
+       addInit(){
+         this.$axios.post('IndustrysCon/queryAll')
+           .then(response=>{
+             this.induList=response;
+           })
+       },*/
+      addInd:function(){
+        this.$axios.post('pay/add',this.$qs.stringify(this.updateIndList))
+          .then(response=>{
+            if(response!=null){
+              this.$message({
+                showClose: true,
+                message: '恭喜你，添加成功',
+                type: 'success'
+              });
+              this.addvisible=false;
+              this.showInd();
+            }else{
+              this.$message({
+                showClose: true,
+                message: '添加失败！',
+                type: 'error'
+              });
+            }
+          })
+      },
+      updateInd:function(){
+        console.log(this.updateIndList)
+        this.$axios.post('pay/update',this.$qs.stringify(this.updateIndList))
+          .then(response=>{
+            if(response!=null){
+              this.$message({
+                showClose: true,
+                message: '恭喜你，修改成功',
+                type: 'success'
+              });
+              this.updatevisible=false;
+              this.shouInd();
+            }else{
+              this.$message({
+                showClose: true,
+                message: '修改失败！',
+                type: 'error'
+              });
+            }
+          })
+      },
+      showPermissionDialog:function(row){
+        this.updateIndList=row;
+        this.addInit();
+      },
+      /*修改状态*/
+      setStatus:function (row) {
+        this.$axios.post('Indus/updateState',this.$qs.stringify(row))
+          .then(response=>{
+            if(response>=1){
+              this.$message({
+                showClose: true,
+                message: '恭喜你，修改成功',
+                type: 'success'
+              });
+              this.showInd()
+            }else{
+              this.$message({
+                showClose: true,
+                message: '修改失败！',
+                type: 'error'
+              });
+            }
+          })
+      },
+      /*删除*/
+      deleteInd:function(row){
+        this.$axios.post('pay/delete?pay_id='+row.pay_id)
+          .then(response=>{
+            if(response!=null){
+              this.$message({
+                showClose: true,
+                message: '恭喜你，删除成功',
+                type: 'success'
+              });
+              this.showInd();
+            }else{
+              this.$message({
+                showClose: true,
+                message: '删除失败！',
+                type: 'error'
+              });
+            }
+          })
+      }
+    }
+  }
+</script>
+
+<style scoped>
+
+</style>

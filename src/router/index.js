@@ -61,29 +61,9 @@ export default new Router({
           component:()=>import('../components/industry/position')
         },
         {
-          path:'entre',
-          name:'entre',
+          path:'position',
+          name:'position',
           component:()=>import('../components/entre/entrepreneur')
-        },
-        {
-          path:'welfare',
-          name:'welfare',
-          component:()=>import('../components/entre/welfare')
-        },
-        {
-          path:'issue_position',
-          name:'issue_position',
-          component:()=>import('../components/entre/issue_position')
-        },
-        {
-          path:'interview',
-          name:'interview',
-          component:()=>import('../components/entre/interview')
-        },
-        {
-          path:'speciality',
-          name:'speciality',
-          component:()=>import('../components/entre/speciality')
         },
         {
           path:'area',
@@ -91,9 +71,13 @@ export default new Router({
           component:()=>import('../components/sys/area')
         },
         {
-          path:'complaint',
-          name:'complaint',
-          component:()=>import('../components/complaint/complaint')
+          path:'pay',
+          name:'pay',
+          component:()=>import('../components/pay_function/pay')
+        },{
+          path:'order',
+            name:'order',
+            component:()=>import('../components/pay_function/order')
         }
       ]
     }

@@ -16,7 +16,7 @@
         prop="pos_id"
         label="ID"
         width="180">
-      </el-table-column>
+    </el-table-column>
       <el-table-column
         prop="pos_name"
         label="名称"
