@@ -76,8 +76,12 @@ export default new Router({
           component:()=>import('../components/pay_function/pay')
         },{
           path:'order',
-            name:'order',
-            component:()=>import('../components/pay_function/order')
+          name:'order',
+          component:()=>import('../components/pay_function/order')
+        },
+        {
+          path:'test',
+          name:'test'
         }
       ]
     }
