@@ -34,39 +34,39 @@
 </template>
 
 <script>
-  export default {
-    name: 'login',
-    data(){
-      return {
-        loginLoading:false,
-        admins:{}
-      }
-    },
-    methods:{
-      login:function () {
-        this.loginLoading=true
-        console.log(this.admins)
-        this.$axios.post('AdminsCon/admins_login',this.$qs.stringify(this.admins))
-          .then(response=>{
-            if(response.length>=1){
-              this.$axios.post('PermissionCon/menu_one?rol_id='+response[0].rol_id)
-                .then(response2=>{
-                  this.$router.push({name:'index'})
-                  localStorage.setItem("menu_one",JSON.stringify(response2));
-                  localStorage.setItem("admins",JSON.stringify(response));
-                })
-            }else{
-              this.$message({
-                showClose: true,
-                message: '账户或密码错误哦！',
-                type: 'error'
-              });
-              this.loginLoading=false
-            }
-          })
-      }
+export default {
+  name: 'login',
+  data () {
+    return {
+      loginLoading: false,
+      admins: {}
+    }
+  },
+  methods: {
+    login: function () {
+      this.loginLoading = true
+      console.log(this.admins)
+      this.$axios.post('AdminsCon/admins_login', this.$qs.stringify(this.admins))
+        .then(response => {
+          if (response.length >= 1) {
+            this.$axios.post('PermissionCon/menu_one?rol_id=' + response[0].rol_id)
+              .then(response2 => {
+                this.$router.push({name: 'index'})
+                localStorage.setItem('menu_one', JSON.stringify(response2))
+                localStorage.setItem('admins', JSON.stringify(response))
+              })
+          } else {
+            this.$message({
+              showClose: true,
+              message: '账户或密码错误哦！',
+              type: 'error'
+            })
+            this.loginLoading = false
+          }
+        })
     }
   }
+}
 </script>
 
 <style scoped>

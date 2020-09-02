@@ -114,184 +114,180 @@
 </template>
 
 <script>
-  export default {
-    name: 'role',
-    data(){
-      return {
-        RoleQuery:'',
-        updateRolevisible:false,
-        addRolevisible:false,
-        role:{},
-        authorityVisible:false,
-        authorityList:{},
-        addBtnLoading:false,
-        defaultProps: {
-          children: 'listTwo',
-          label: 'per_name'
-        },
-        rol_id:0,
-        currentPage: 1,
-        // 总条数，根据接口获取数据长度(注意：这里不能为空)
-        totalCount: 0,
-        // 个数选择器（可修改）
-        pageSizes: [5, 9, 15, 30],
-        // 默认每页显示的条数（可修改）
-        PageSize: 5
-      }
+export default {
+  name: 'role',
+  data () {
+    return {
+      RoleQuery: '',
+      updateRolevisible: false,
+      addRolevisible: false,
+      role: {},
+      authorityVisible: false,
+      authorityList: {},
+      addBtnLoading: false,
+      defaultProps: {
+        children: 'listTwo',
+        label: 'per_name'
+      },
+      rol_id: 0,
+      currentPage: 1,
+      // 总条数，根据接口获取数据长度(注意：这里不能为空)
+      totalCount: 0,
+      // 个数选择器（可修改）
+      pageSizes: [5, 9, 15, 30],
+      // 默认每页显示的条数（可修改）
+      PageSize: 5
+    }
+  },
+  created: function () {
+    this.showRole()
+  },
+  methods: {
+    // 设置表头的颜色
+    rowClass () {
+      return 'background:#545c64;color:white'
     },
-    created:function(){
-      this.showRole();
+    // 设置指定行、列、具体单元格颜色
+    cellStyle () {
+      return 'background:#545c64;color:white'
     },
-    methods: {
-      //设置表头的颜色
-      rowClass () {
-        return 'background:#545c64;color:white'
-      },
-      //设置指定行、列、具体单元格颜色
-      cellStyle () {
-        return 'background:#545c64;color:white'
-      },
-      handleSizeChange (val) {
-        // 改变每页显示的条数
-        this.PageSize = val
-        // 注意：在改变每页显示的条数时，要将页码显示到第一页
-        this.currentPage = 1
-      },
-      // 显示第几页
-      handleCurrentChange (val) {
-        // 改变默认的页数
-        this.currentPage = val
-      },
-      showRole:function(){
-        this.$axios.post('RoleCon/role_query')
-          .then(response=>{
-            if(response.length>=1){
-              this.RoleQuery=response;
-              this.totalCount=response.length;
-            }
-          })
-      },
-      getCheckedKeys() {
-
-        let str='';
-        for (let p=0;p<this.$refs.tree.getCheckedKeys().length;p++) {
-          console.log(this.$refs.tree.getCheckedKeys()[p]);
-          if(p<this.$refs.tree.getCheckedKeys().length-1){
-            str+=this.$refs.tree.getCheckedKeys()[p]+','
-          }else{
-            str+=this.$refs.tree.getCheckedKeys()[p]
+    handleSizeChange (val) {
+      // 改变每页显示的条数
+      this.PageSize = val
+      // 注意：在改变每页显示的条数时，要将页码显示到第一页
+      this.currentPage = 1
+    },
+    // 显示第几页
+    handleCurrentChange (val) {
+      // 改变默认的页数
+      this.currentPage = val
+    },
+    showRole: function () {
+      this.$axios.post('RoleCon/role_query')
+        .then(response => {
+          if (response.length >= 1) {
+            this.RoleQuery = response
+            this.totalCount = response.length
           }
-        }
-        console.log(this.$refs.tree.getCheckedNodes())
-        this.$axios.get('RoleCon/setAuthority',{
-          params:{rol_id:this.rol_id,per_id:str}
         })
-          .then(response=>{
-            if(response>=1){
-              this.$message({
-                showClose: true,
-                message: '恭喜你，修改成功',
-                type: 'success'
-              });
-              this.authorityVisible=false;
-              this.showRole();
-            }else{
-              this.$message({
-                showClose: true,
-                message: '修改失败！',
-                type: 'error'
-              });
-            }
-          })
-      },
-      // 设置状态
-      /*setStatus(data) {
-        console.log(data);
-      }*/
-      showUpdateDialog:function (row) {
-        console.log(row)
-        this.role=row
-
-      },
-      setAuthority:function(row){
-        this.rol_id=row.rol_id;
-        this.$axios.post('PermissionCon/menu_query')
-          .then(response=>{
-            if(response.length>0){
-              this.authorityList=response;
-              this.$axios.post('RoleCon/queryRol_id?rol_id='+this.rol_id)
-                .then(response2=>{
-                  for (let p=0;p<response2.length;p++){
-                    console.log(response2[p].per_id)
-                    this.$refs.tree.setChecked(response2[p].per_id, true, false)
-                  }
-                })
-            }
-          })
-      },
-      updateRole:function () {
-        this.$axios.post('RoleCon/role_update',this.$qs.stringify(this.role))
-          .then(response=>{
-            if(response>=1){
-              this.$message({
-                showClose: true,
-                message: '恭喜你，修改成功',
-                type: 'success'
-              });
-              this.updateRolevisible=false;
-              this.showRole();
-
-            }else{
-              this.$message({
-                showClose: true,
-                message: '修改失败！',
-                type: 'error'
-              });
-            }
-          })
-      },
-      deleteRole:function (row) {
-        this.$axios.post('RoleCon/role_delete?rol_id='+row.rol_id)
-          .then(response=>{
-            if(response>=1){
-              this.$message({
-                showClose: true,
-                message: '恭喜你，删除成功',
-                type: 'success'
-              });
-              this.showRole();
-            }else{
-              this.$message({
-                showClose: true,
-                message: '删除失败！',
-                type: 'error'
-              });
-            }
-
-          })
-      },
-      addRole:function () {
-        this.$axios.post('RoleCon/role_insert',this.$qs.stringify(this.role))
-          .then(response=>{
-            if(response>=1){
-              this.$message({
-                showClose: true,
-                message: '恭喜你，添加成功',
-                type: 'success'
-              });
-              this.addRolevisible=false;
-              this.showRole();
-            }else{
-              this.$message({
-                showClose: true,
-                message: '添加失败！',
-                type: 'error'
-              });
-            }
-          })
+    },
+    getCheckedKeys () {
+      let str = ''
+      for (let p = 0; p < this.$refs.tree.getCheckedKeys().length; p++) {
+        console.log(this.$refs.tree.getCheckedKeys()[p])
+        if (p < this.$refs.tree.getCheckedKeys().length - 1) {
+          str += this.$refs.tree.getCheckedKeys()[p] + ','
+        } else {
+          str += this.$refs.tree.getCheckedKeys()[p]
+        }
       }
+      console.log(this.$refs.tree.getCheckedNodes())
+      this.$axios.get('RoleCon/setAuthority', {
+        params: {rol_id: this.rol_id, per_id: str}
+      })
+        .then(response => {
+          if (response >= 1) {
+            this.$message({
+              showClose: true,
+              message: '恭喜你，修改成功',
+              type: 'success'
+            })
+            this.authorityVisible = false
+            this.showRole()
+          } else {
+            this.$message({
+              showClose: true,
+              message: '修改失败！',
+              type: 'error'
+            })
+          }
+        })
+    },
+    // 设置状态
+    /* setStatus(data) {
+        console.log(data);
+      } */
+    showUpdateDialog: function (row) {
+      console.log(row)
+      this.role = row
+    },
+    setAuthority: function (row) {
+      this.rol_id = row.rol_id
+      this.$axios.post('PermissionCon/menu_query')
+        .then(response => {
+          if (response.length > 0) {
+            this.authorityList = response
+            this.$axios.post('RoleCon/queryRol_id?rol_id=' + this.rol_id)
+              .then(response2 => {
+                for (let p = 0; p < response2.length; p++) {
+                  console.log(response2[p].per_id)
+                  this.$refs.tree.setChecked(response2[p].per_id, true, false)
+                }
+              })
+          }
+        })
+    },
+    updateRole: function () {
+      this.$axios.post('RoleCon/role_update', this.$qs.stringify(this.role))
+        .then(response => {
+          if (response >= 1) {
+            this.$message({
+              showClose: true,
+              message: '恭喜你，修改成功',
+              type: 'success'
+            })
+            this.updateRolevisible = false
+            this.showRole()
+          } else {
+            this.$message({
+              showClose: true,
+              message: '修改失败！',
+              type: 'error'
+            })
+          }
+        })
+    },
+    deleteRole: function (row) {
+      this.$axios.post('RoleCon/role_delete?rol_id=' + row.rol_id)
+        .then(response => {
+          if (response >= 1) {
+            this.$message({
+              showClose: true,
+              message: '恭喜你，删除成功',
+              type: 'success'
+            })
+            this.showRole()
+          } else {
+            this.$message({
+              showClose: true,
+              message: '删除失败！',
+              type: 'error'
+            })
+          }
+        })
+    },
+    addRole: function () {
+      this.$axios.post('RoleCon/role_insert', this.$qs.stringify(this.role))
+        .then(response => {
+          if (response >= 1) {
+            this.$message({
+              showClose: true,
+              message: '恭喜你，添加成功',
+              type: 'success'
+            })
+            this.addRolevisible = false
+            this.showRole()
+          } else {
+            this.$message({
+              showClose: true,
+              message: '添加失败！',
+              type: 'error'
+            })
+          }
+        })
     }
   }
+}
 </script>
 
 <style scoped>

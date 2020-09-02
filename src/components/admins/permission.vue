@@ -145,16 +145,16 @@ export default {
   name: 'permission',
   data () {
     return {
-      tableData:'',
-      addvisible:false,
-      addBtnLoading:false,
-      updatevisible:false,
-      addtwovisible:false,
-      onelist:{
-        name:''
+      tableData: '',
+      addvisible: false,
+      addBtnLoading: false,
+      updatevisible: false,
+      addtwovisible: false,
+      onelist: {
+        name: ''
       },
-      twolist:{},
-      tableDatas:{},
+      twolist: {},
+      tableDatas: {},
       currentPage: 1,
       // 总条数，根据接口获取数据长度(注意：这里不能为空)
       totalCount: 0,
@@ -164,16 +164,16 @@ export default {
       PageSize: 5
     }
   },
-  created:function(){
-    this.showPermission();
+  created: function () {
+    this.showPermission()
   },
   methods: {
-    /*显示菜单数据信息*/
-    showPermission:function(){
+    /* 显示菜单数据信息 */
+    showPermission: function () {
       this.$axios.post('PermissionCon/menu_query')
-        .then(response=>{
-          this.tableData=response;
-          this.totalCount=response.length;
+        .then(response => {
+          this.tableData = response
+          this.totalCount = response.length
         })
     },
     // 设置表头的颜色
@@ -183,7 +183,8 @@ export default {
     // 设置指定行、列、具体单元格颜色
     cellStyle () {
       return 'background:#545c64;color:white'
-    },handleSizeChange (val) {
+    },
+    handleSizeChange (val) {
       // 改变每页显示的条数
       this.PageSize = val
       // 注意：在改变每页显示的条数时，要将页码显示到第一页
@@ -194,93 +195,93 @@ export default {
       // 改变默认的页数
       this.currentPage = val
     },
-    showPermissionDialog:function(row){
+    showPermissionDialog: function (row) {
       console.log(row)
-      this.tableDatas=row;
+      this.tableDatas = row
     },
-    showTwoMenu:function(row){
-      this.twolist.per_parent=row.per_id
-      this.onelist.name=row.per_name
+    showTwoMenu: function (row) {
+      this.twolist.per_parent = row.per_id
+      this.onelist.name = row.per_name
     },
-    addTwoPermission:function(){
-      this.$axios.post('PermissionCon/menu_insert',this.$qs.stringify(this.twolist))
-        .then(response=>{
-          if(response>=1){
+    addTwoPermission: function () {
+      this.$axios.post('PermissionCon/menu_insert', this.$qs.stringify(this.twolist))
+        .then(response => {
+          if (response >= 1) {
             this.$message({
               showClose: true,
               message: '恭喜你，添加成功',
               type: 'success'
-            });
-            this.addtwovisible=false;
-            this.showPermission();
-          }else{
+            })
+            this.addtwovisible = false
+            this.showPermission()
+          } else {
             this.$message({
               showClose: true,
               message: '添加失败！',
               type: 'error'
-            });
+            })
           }
         })
     },
-    addPermission:function () {
-      this.tableData.per_parent=0;
-      this.$axios.post('PermissionCon/menu_insert',this.$qs.stringify(this.tableDatas))
-        .then(response=>{
-          if(response>=1){
+    addPermission: function () {
+      this.tableData.per_parent = 0
+      this.$axios.post('PermissionCon/menu_insert', this.$qs.stringify(this.tableDatas))
+        .then(response => {
+          if (response >= 1) {
             this.$message({
               showClose: true,
               message: '恭喜你，添加成功',
               type: 'success'
-            });
-            this.addvisible=false;
-            this.showPermission();
-          }else{
+            })
+            this.addvisible = false
+            this.showPermission()
+          } else {
             this.$message({
               showClose: true,
               message: '添加失败！',
               type: 'error'
-            });
+            })
           }
         })
     },
-    updatePermission:function () {
-      this.$axios.post('PermissionCon/permission_update',this.$qs.stringify(this.tableDatas))
-        .then(response=>{
-          if(response>=1){
+    updatePermission: function () {
+      this.$axios.post('PermissionCon/permission_update', this.$qs.stringify(this.tableDatas))
+        .then(response => {
+          if (response >= 1) {
             this.$message({
               showClose: true,
               message: '恭喜你，修改成功',
               type: 'success'
-            });
-            this.updatevisible=false;
-            this.showPermission();
-          }else{
+            })
+            this.updatevisible = false
+            this.showPermission()
+          } else {
             this.$message({
               showClose: true,
               message: '修改失败！',
               type: 'error'
-            });
+            })
           }
         })
     },
-    deletePermission:function (row) {
-      console.log(row.per_id);
-      this.$axios.post('PermissionCon/permission_delete?per_id='+row.per_id)
-        .then(response=>{
-          if(response>=1){
+    deletePermission: function (row) {
+      console.log(row.per_id)
+      this.$axios.post('PermissionCon/permission_delete?per_id=' + row.per_id)
+        .then(response => {
+          if (response >= 1) {
             this.$message({
               showClose: true,
               message: '恭喜你，删除成功',
               type: 'success'
-            });
-            this.updatevisible=false;
-            this.showPermission();
-          }else{
+            })
+            this.updatevisible = false
+            this.showPermission()
+          } else {
             this.$message({
               showClose: true,
               message: '删除失败！',
               type: 'error'
-            });
+            })
           }
         })
     }
@@ -298,6 +299,5 @@ export default {
     margin-right:3px;
     color: white;
   }
-
 
 </style>

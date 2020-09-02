@@ -11,6 +11,7 @@
     <el-input prop="com_phone" v-model="com_phone" type="text" placeholder="请输入" style="width:200px;height:30px;"></el-input>
     <el-button @click="findAll()">搜索</el-button>
     <el-button type="text" @click="showDialog1()">添加</el-button>
+    <el-button type="text" @click="listquanbu()">全部</el-button>
     <!-- data:绑定数据  height:声明之后会固定表头-->
     <el-table :data="pageInfo.slice((currentPage-1)*PageSize,currentPage*PageSize) " style="width: 100%;margin-bottom: 20px;"
               :header-cell-style="rowClass"
@@ -55,7 +56,6 @@
       </el-table-column>
     </el-table>
 
-
     <div>
       <el-pagination
         layout="total, sizes, prev, pager, next, jumper"
@@ -68,8 +68,6 @@
       </el-pagination>
 
     </div>
-
-
 
     <el-dialog width="40%" title="物品修改" :visible="dialogVisible" :before-close="handleClose">
       <el-form label-width="100px" label-suffix="：" :model="complaint" class="form" :rules="rules" ref="fm">
@@ -204,196 +202,202 @@
 </template>
 
 <script>
-  import ElSelectDropdown from 'element-ui/packages/select/src/select-dropdown'
-  export default {
-    name: 'complaint',
-    components: {ElSelectDropdown},
-    data () {
-      return {
-        dialogVisible: false,
-        dialogVisible1: false,
-        complaint:{},
-        com_phone:"",
-        cau_id:"",
-        pageInfo: [],
-        pageSizes: [1, 2, 3, 4, 6],
-        // 每页显示的条数
-        PageSize: 6,
-        // 默认显示第几页
-        currentPage: 1,
-        total:0,
-        rules: {},
-        list: [
-        ],
-        cuslist:[],
-        customer:{},
-        admlist:[],
-        admins:{},
-        isslist:[],
-        issue_position:{},
-        caulist:[],
-        cause:{},
-        cljg:[]
-      }
+import ElSelectDropdown from 'element-ui/packages/select/src/select-dropdown'
+export default {
+  name: 'complaint',
+  components: {ElSelectDropdown},
+  data () {
+    return {
+      dialogVisible: false,
+      dialogVisible1: false,
+      complaint: {},
+      com_phone: '',
+      cau_id: '',
+      pageInfo: [],
+      pageSizes: [1, 2, 3, 4, 6],
+      // 每页显示的条数
+      PageSize: 6,
+      // 默认显示第几页
+      currentPage: 1,
+      total: 0,
+      rules: {},
+      list: [
+      ],
+      cuslist: [],
+      customer: {},
+      admlist: [],
+      admins: {},
+      isslist: [],
+      issue_position: {},
+      caulist: [],
+      cause: {},
+      cljg: []
+    }
+  },
+  created: function () {
+    this.findAll()
+    this.findcus()
+    this.findadm()
+    this.findiss()
+    this.findcau()
+    this.findcljg()
+  },
+  methods: {
+    findAll: function () {
+      console.log(this.com_phone)
+      console.log(this.cau_id)
+      this.$axios.post('Complaint/show?com_phone=' + this.com_phone + '&cau_id=' + this.cau_id)
+        .then(response => {
+          this.pageInfo = response
+          this.total = this.pageInfo.length
+          // alert(this.total)
+        })
     },
-    created: function () {
-      this.findAll()
+    listquanbu: function () {
+      this.$axios.post('Complaint/showlist1').then(response => {
+        this.pageInfo = response
+        this.total = this.pageInfo.length
+      })
+    },
+    findcus: function () {
+      this.$axios.post('Complaint/cus')
+        .then(response => {
+          this.cuslist = response
+        })
+    },
+    findadm: function () {
+      this.$axios.post('Complaint/adm')
+        .then(response => {
+          this.admlist = response
+        })
+    },
+    findiss: function () {
+      this.$axios.post('Complaint/iss')
+        .then(response => {
+          this.isslist = response
+        })
+    },
+    findcau: function () {
+      this.$axios.post('Complaint/cau')
+        .then(response => {
+          this.caulist = response
+        })
+    },
+    showDialog: function (row) {
+      // 显示模态窗口
+      this.dialogVisible = true
+      this.complaint = row
       this.findcus()
       this.findadm()
       this.findiss()
       this.findcau()
-      this.findcljg()
     },
-    methods: {
-      findAll: function () {
-        console.log(this.com_phone);
-        console.log(this.cau_id)
-        this.$axios.post('Complaint/show?com_phone='+this.com_phone+'&cau_id='+this.cau_id)
-          .then(response => {
-            this.pageInfo = response
-            this.total=this.pageInfo.length;
-            //alert(this.total)
-          })
-      },
-      findcus:function(){
-        this.$axios.post('Complaint/cus')
-          .then(response=>{
-            this.cuslist=response
-          })
-      },
-      findadm:function(){
-        this.$axios.post('Complaint/adm')
-          .then(response=>{
-            this.admlist =response
-          })
-      },
-      findiss:function(){
-        this.$axios.post('Complaint/iss')
-          .then(response=>{
-            this.isslist =response
-          })
-      },
-      findcau:function(){
-        this.$axios.post('Complaint/cau')
-          .then(response=>{
-            this.caulist =response
-          })
-      },
-      showDialog: function (row) {
-        // 显示模态窗口
-        this.dialogVisible = true
-        this.complaint = row
-        this.findcus()
-        this.findadm()
-        this.findiss()
-        this.findcau()
-      },
-      showDialog1: function () {
-        // 显示模态窗口
-        this.dialogVisible1 = true
-        this.complaint = {}
-        this.findcus()
-        this.findadm()
-        this.findiss()
-        this.findcau()
-      },
-      add: function () {
-        this.$axios.post('Complaint/add', this.complaint)
-          .then(response => {
-            this.dialogVisible1 = false
-            this.list = response
-            this.findAll();
-          })
-      },
-      edit: function (row) {
-        this.$axios.post('Complaint/update', this.complaint)
+    showDialog1: function () {
+      // 显示模态窗口
+      this.dialogVisible1 = true
+      this.complaint = {}
+      this.findcus()
+      this.findadm()
+      this.findiss()
+      this.findcau()
+    },
+    add: function () {
+      this.$axios.post('Complaint/add', this.complaint)
+        .then(response => {
+          this.dialogVisible1 = false
+          this.list = response
+          this.listquanbu()
+        })
+    },
+    edit: function (row) {
+      this.$axios.post('Complaint/update', this.complaint)
+        .then(response => {
+          this.dialogVisible = false
+          this.list = response
+          console.log(this.list)
+          this.listquanbu()
+        })
+    },
+    deleleById: function (row) {
+      this.$confirm('确定删除编号为' + row.com_id + '的数据？').then(_ => {
+        this.$axios.post('Complaint/delete?com_id=' + row.com_id)
           .then(response => {
             this.dialogVisible = false
             this.list = response
-            console.log(this.list)
-            this.findAll();
+            // alert(1)
+            this.listquanbu()
           })
-      },
-      deleleById: function (row) {
-        this.$confirm('确定删除编号为'+row.com_id+'的数据？').then(_=> {
-          this.$axios.post('Complaint/delete?com_id=' + row.com_id)
-            .then(response => {
-              this.dialogVisible = false
-              this.list = response
-              //alert(1)
-              this.findAll();
+      })
+    },
+    handleClose (done) {
+      this.$confirm('确认关闭?').then(_ => {
+        this.dialogVisible = false
+        this.dialogVisible1 = false
+      }).catch(_ => {})
+    },
+    handleSizeChange (val) {
+      this.PageSize = val
+      // 注意：在改变每页显示的条数时，要将页码显示到第一页
+      this.currentPage = 1
+    },
+    handleCurrentChange (val) {
+      this.currentPage = val
+    },
+    // 设置表头的颜色
+    rowClass () {
+      return 'background:#545c64;color:white'
+    },
+    // 设置指定行、列、具体单元格颜色
+    cellStyle () {
+      return 'background:#545c64;color:white'
+    },
+    setStatus1: function (row) {
+      console.log(row)
+      this.$axios.post('Complaint/updfhzt', row)
+        .then(response => {
+          if (response > 0) {
+            console.info(response)
+            this.$message({
+              message: '修改成功',
+              type: 'success'
             })
+            this.listquanbu()
+          } else {
+            console.info(response)
+            this.$message({
+              message: '修改失败！',
+              type: 'error'
+            })
+          }
         })
-      },
-      handleClose (done) {
-        this.$confirm('确认关闭?').then(_ => {
-          this.dialogVisible = false
-          this.dialogVisible1 = false
-        }).catch(_ => {})
-      }
-      ,handleSizeChange(val) {
-        this.PageSize = val
-        // 注意：在改变每页显示的条数时，要将页码显示到第一页
-        this.currentPage = 1
-      },
-      handleCurrentChange(val) {
-        this.currentPage = val
-      },
-      // 设置表头的颜色
-      rowClass () {
-        return 'background:#545c64;color:white'
-      },
-      // 设置指定行、列、具体单元格颜色
-      cellStyle () {
-        return 'background:#545c64;color:white'
-      },
-      setStatus1:function (row) {
-        console.log(row)
-        this.$axios.post('Complaint/updfhzt',row)
-          .then(response=>{
-            if(response>0){
-              console.info(response)
-              this.$message({
-                message: '修改成功',
-                type: 'success'
-              });
-              this.findAll()
-            }else{
-              console.info(response)
-              this.$message({
-                message: '修改失败！',
-                type: 'error'
-              });
-            }
-          })
-      },
-      setStatus2:function (row) {
-        console.log(row)
-        this.$axios.post('Complaint/updclzt',row)
-          .then(response=>{
-            if(response>0){
-              console.info(response)
-              this.$message({
-                message: '修改成功',
-                type: 'success'
-              });
-              this.findAll()
-            }else{
-              console.info(response)
-              this.$message({
-                message: '修改失败！',
-                type: 'error'
-              });
-            }
-          })
-      },
-      findcljg:function(row){
-          this.$axios.post('Complaint/queryqb1').then(response=>{
-            this.cljg=response
-          })
-      }
+    },
+    setStatus2: function (row) {
+      console.log(row)
+      this.$axios.post('Complaint/updclzt', row)
+        .then(response => {
+          if (response > 0) {
+            console.info(response)
+            this.$message({
+              message: '修改成功',
+              type: 'success'
+            })
+            this.listquanbu()
+          } else {
+            console.info(response)
+            this.$message({
+              message: '修改失败！',
+              type: 'error'
+            })
+          }
+        })
+    },
+    findcljg: function (row) {
+      this.$axios.post('Complaint/queryqb1').then(response => {
+        this.cljg = response
+      })
     }
   }
+}
 </script>
 
 <style scoped>

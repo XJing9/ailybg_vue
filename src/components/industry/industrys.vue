@@ -80,8 +80,8 @@
 <script>
 export default {
   name: 'industrys',
-  data(){
-    return{
+  data () {
+    return {
       currentPage: 1,
       // 总条数，根据接口获取数据长度(注意：这里不能为空)
       totalCount: 0,
@@ -89,88 +89,88 @@ export default {
       pageSizes: [5, 9, 15, 30],
       // 默认每页显示的条数（可修改）
       PageSize: 5,
-      induList:{},
-      updateInduList:{},
-      updateBtnLoading:false,
-      addBtnLoading:false,
-      updatevisible:false,
-      addvisible:false,
+      induList: {},
+      updateInduList: {},
+      updateBtnLoading: false,
+      addBtnLoading: false,
+      updatevisible: false,
+      addvisible: false
     }
   },
-  created:function(){
-    this.showIndu();
+  created: function () {
+    this.showIndu()
   },
-  methods:{
-    /*显示数据*/
-    showIndu:function(){
+  methods: {
+    /* 显示数据 */
+    showIndu: function () {
       this.$axios.post('IndustrysCon/queryAll')
-        .then(response=>{
-          this.induList=response;
-          this.totalCount=response.length;
+        .then(response => {
+          this.induList = response
+          this.totalCount = response.length
         })
     },
-    addIndu:function(){
-      this.$axios.post('IndustrysCon/insert',this.$qs.stringify(this.updateInduList))
-        .then(response=>{
-          if(response!=null){
+    addIndu: function () {
+      this.$axios.post('IndustrysCon/insert', this.$qs.stringify(this.updateInduList))
+        .then(response => {
+          if (response != null) {
             this.$message({
               showClose: true,
               message: '恭喜你，添加成功',
               type: 'success'
-            });
-            this.addvisible=false;
-            this.showIndu();
-          }else{
+            })
+            this.addvisible = false
+            this.showIndu()
+          } else {
             this.$message({
               showClose: true,
               message: '添加失败！',
               type: 'error'
-            });
+            })
           }
         })
     },
-    updateIndu:function(){
+    updateIndu: function () {
       console.log(this.updateInduList)
-      this.$axios.post('IndustrysCon/update',this.$qs.stringify(this.updateInduList))
-        .then(response=>{
-          if(response!=null){
+      this.$axios.post('IndustrysCon/update', this.$qs.stringify(this.updateInduList))
+        .then(response => {
+          if (response != null) {
             this.$message({
               showClose: true,
               message: '恭喜你，修改成功',
               type: 'success'
-            });
-            this.updatevisible=false;
-            this.showIndu();
-          }else{
+            })
+            this.updatevisible = false
+            this.showIndu()
+          } else {
             this.$message({
               showClose: true,
               message: '修改失败！',
               type: 'error'
-            });
+            })
           }
         })
     },
-    showPermissionDialog:function(row){
+    showPermissionDialog: function (row) {
       console.log(row)
-      this.updateInduList=row
+      this.updateInduList = row
     },
-    /*删除*/
-    deleteIndu:function(row){
-      this.$axios.post('IndustrysCon/delete?indu_id='+row.indu_id)
-        .then(response=>{
-          if(response!=null){
+    /* 删除 */
+    deleteIndu: function (row) {
+      this.$axios.post('IndustrysCon/delete?indu_id=' + row.indu_id)
+        .then(response => {
+          if (response != null) {
             this.$message({
               showClose: true,
               message: '恭喜你，删除成功',
               type: 'success'
-            });
-            this.showIndu();
-          }else{
+            })
+            this.showIndu()
+          } else {
             this.$message({
               showClose: true,
               message: '删除失败！',
               type: 'error'
-            });
+            })
           }
         })
     },

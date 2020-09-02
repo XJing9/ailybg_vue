@@ -111,87 +111,87 @@
 </template>
 
 <script>
-  export default {
-    name: 'index',
-    data () {
-      return {
-        menu_one: '',
-        admins:'',
-        personal_visible: false,
-        addBtnLoading:false,
-        passwordForm: {
-          oldPassword: '',
-          password: '',
-          rePassword: '',
-        },
-        activeName:'config'
+export default {
+  name: 'index',
+  data () {
+    return {
+      menu_one: '',
+      admins: '',
+      personal_visible: false,
+      addBtnLoading: false,
+      passwordForm: {
+        oldPassword: '',
+        password: '',
+        rePassword: ''
+      },
+      activeName: 'config'
+    }
+  },
+  created: function () {
+    //
+    this.admins = JSON.parse(localStorage.getItem('admins'))
+    this.menu_one = JSON.parse(localStorage.getItem('menu_one'))
+  },
+  methods: {
+    handlerCommand: function (command) {
+      if (command == 'personal') {
+        this.personal_visible = true
       }
     },
-    created: function () {
-      //
-      this.admins=JSON.parse(localStorage.getItem("admins"));
-      this.menu_one=JSON.parse(localStorage.getItem("menu_one"))
+    Mg: function (clickname) {
+      console.log(clickname)
+      this.$router.push({name: clickname})
     },
-    methods: {
-      handlerCommand:function (command) {
-        if(command=='personal'){
-          this.personal_visible=true;
-        }
-      },
-      Mg:function(clickname){
-        console.log(clickname)
-        this.$router.push({name:clickname});
-      },
-      showPersonaldialog: function () {
-        this.personal_visible = true
-      },
-      updateAdminsPwd:function(){
-        this.addBtnLoading=true
-        if(this.passwordForm.password!=this.passwordForm.rePassword){
-          this.$message({
-            showClose: true,
-            message: '两次密码不一致哦！',
-            type: 'error'
-          });
-          this.addBtnLoading=false
-        }else if(this.passwordForm.oldPassword!=this.admins.adm_pwd){
-          this.$message({
-            showClose: true,
-            message: '原密码不正确哦！',
-            type: 'error'
-          });
-          this.addBtnLoading=false
-        } else{
-          this.adminsupdatestate=true;
-          this.admins.adm_pwd=this.passwordForm.password
-          this.$axios.post('AdminsCon/admins_update',this.$qs.stringify(this.admins))
-            .then(response=>{
-              if(response>=1){
-                this.$message({
-                  showClose: true,
-                  message: '恭喜你，修改成功,请重新登录',
-                  type: 'success'
-                });
-                this.$router.push({name:'login'})
-              }
-            })
-        }
-      },
-      updateAdminsPhone:function () {
-        this.$axios.post('AdminsCon/admins_update',this.$qs.stringify(this.admins))
-          .then(response=>{
-            if(response>=1){
+    showPersonaldialog: function () {
+      this.personal_visible = true
+    },
+    updateAdminsPwd: function () {
+      this.addBtnLoading = true
+      if (this.passwordForm.password != this.passwordForm.rePassword) {
+        this.$message({
+          showClose: true,
+          message: '两次密码不一致哦！',
+          type: 'error'
+        })
+        this.addBtnLoading = false
+      } else if (this.passwordForm.oldPassword != this.admins.adm_pwd) {
+        this.$message({
+          showClose: true,
+          message: '原密码不正确哦！',
+          type: 'error'
+        })
+        this.addBtnLoading = false
+      } else {
+        this.adminsupdatestate = true
+        this.admins.adm_pwd = this.passwordForm.password
+        this.$axios.post('AdminsCon/admins_update', this.$qs.stringify(this.admins))
+          .then(response => {
+            if (response >= 1) {
               this.$message({
                 showClose: true,
-                message: '恭喜你，修改成功',
+                message: '恭喜你，修改成功,请重新登录',
                 type: 'success'
-              });
-              this.addBtnLoading=false
+              })
+              this.$router.push({name: 'login'})
             }
           })
       }
+    },
+    updateAdminsPhone: function () {
+      this.$axios.post('AdminsCon/admins_update', this.$qs.stringify(this.admins))
+        .then(response => {
+          if (response >= 1) {
+            this.$message({
+              showClose: true,
+              message: '恭喜你，修改成功',
+              type: 'success'
+            })
+            this.addBtnLoading = false
+          }
+        })
     }
   }
+}
 </script>
 
 <style scoped>

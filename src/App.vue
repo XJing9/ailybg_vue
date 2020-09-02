@@ -7,21 +7,21 @@
 <script>
 export default {
   name: 'App',
-  provide(){//全局注册方法
-    return{
-      reload:this.reload
+  provide () { // 全局注册方法
+    return {
+      reload: this.reload
     }
   },
-  data(){
-    return{
-      isRouteAlive:true
+  data () {
+    return {
+      isRouteAlive: true
     }
   },
-  methods:{
-    reload(){
-      this.isRouteAlive=false;
+  methods: {
+    reload () {
+      this.isRouteAlive = false
       this.$nextTick(function () {
-        this.isRouteAlive=true;
+        this.isRouteAlive = true
       })
     }
   }

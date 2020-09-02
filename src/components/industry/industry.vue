@@ -126,25 +126,25 @@ export default {
       pageSizes: [5, 9, 15, 30],
       // 默认每页显示的条数（可修改）
       PageSize: 5,
-      indList:{},
-      updateIndList:{},
-      induList:{},
-      addvisible:false,
-      updatevisible:false,
-      addBtnLoading:false,
-      updateBtnLoading:false
+      indList: {},
+      updateIndList: {},
+      induList: {},
+      addvisible: false,
+      updatevisible: false,
+      addBtnLoading: false,
+      updateBtnLoading: false
     }
   },
   created: function () {
-    this.showInd();
+    this.showInd()
   },
   methods: {
     /* 显示数据 */
     showInd: function () {
       this.$axios.post('Indus/query')
         .then(response => {
-          this.indList=response;
-          this.totalCount=response.length;
+          this.indList = response
+          this.totalCount = response.length
         })
     },
     handleSizeChange (val) {
@@ -166,95 +166,95 @@ export default {
     cellStyle () {
       return 'background:#545c64;color:white'
     },
-    /*添加初始化*/
-    addInit(){
+    /* 添加初始化 */
+    addInit () {
       this.$axios.post('IndustrysCon/queryAll')
-        .then(response=>{
-          this.induList=response;
+        .then(response => {
+          this.induList = response
         })
     },
-    addInd:function(){
-      this.$axios.post('Indus/insert',this.$qs.stringify(this.updateIndList))
-        .then(response=>{
-          if(response!=null){
+    addInd: function () {
+      this.$axios.post('Indus/insert', this.$qs.stringify(this.updateIndList))
+        .then(response => {
+          if (response != null) {
             this.$message({
               showClose: true,
               message: '恭喜你，添加成功',
               type: 'success'
-            });
-            this.addvisible=false;
-            this.showInd();
-          }else{
+            })
+            this.addvisible = false
+            this.showInd()
+          } else {
             this.$message({
               showClose: true,
               message: '添加失败！',
               type: 'error'
-            });
+            })
           }
         })
     },
-    updateInd:function(){
+    updateInd: function () {
       console.log(this.updateIndList)
-      this.$axios.post('Indus/update',this.$qs.stringify(this.updateIndList))
-        .then(response=>{
-          if(response!=null){
+      this.$axios.post('Indus/update', this.$qs.stringify(this.updateIndList))
+        .then(response => {
+          if (response != null) {
             this.$message({
               showClose: true,
               message: '恭喜你，修改成功',
               type: 'success'
-            });
-            this.updatevisible=false;
-            this.shouInd();
-          }else{
+            })
+            this.updatevisible = false
+            this.shouInd()
+          } else {
             this.$message({
               showClose: true,
               message: '修改失败！',
               type: 'error'
-            });
+            })
           }
         })
     },
-    showPermissionDialog:function(row){
-      this.updateIndList=row;
-      this.addInit();
+    showPermissionDialog: function (row) {
+      this.updateIndList = row
+      this.addInit()
     },
-    /*修改状态*/
-    setStatus:function (row) {
-      this.$axios.post('Indus/updateState',this.$qs.stringify(row))
-        .then(response=>{
-          if(response>=1){
+    /* 修改状态 */
+    setStatus: function (row) {
+      this.$axios.post('Indus/updateState', this.$qs.stringify(row))
+        .then(response => {
+          if (response >= 1) {
             this.$message({
               showClose: true,
               message: '恭喜你，修改成功',
               type: 'success'
-            });
+            })
             this.showInd()
-          }else{
+          } else {
             this.$message({
               showClose: true,
               message: '修改失败！',
               type: 'error'
-            });
+            })
           }
         })
     },
-    /*删除*/
-    deleteInd:function(row){
-      this.$axios.post('Indus/delete?ind_id='+row.ind_id)
-        .then(response=>{
-          if(response!=null){
+    /* 删除 */
+    deleteInd: function (row) {
+      this.$axios.post('Indus/delete?ind_id=' + row.ind_id)
+        .then(response => {
+          if (response != null) {
             this.$message({
               showClose: true,
               message: '恭喜你，删除成功',
               type: 'success'
-            });
-            this.showInd();
-          }else{
+            })
+            this.showInd()
+          } else {
             this.$message({
               showClose: true,
               message: '删除失败！',
               type: 'error'
-            });
+            })
           }
         })
     }

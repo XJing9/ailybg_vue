@@ -167,81 +167,81 @@
 </template>
 
 <script>
-  export default {
-    name: 'customer',
-    data(){
-      return {
-        cusList:'',
-        currentPage: 1,
-        // 总条数，根据接口获取数据长度(注意：这里不能为空)
-        totalCount: 0,
-        // 个数选择器（可修改）
-        pageSizes: [5, 9, 15, 30],
-        // 默认每页显示的条数（可修改）
-        PageSize: 5
-      }
+export default {
+  name: 'customer',
+  data () {
+    return {
+      cusList: '',
+      currentPage: 1,
+      // 总条数，根据接口获取数据长度(注意：这里不能为空)
+      totalCount: 0,
+      // 个数选择器（可修改）
+      pageSizes: [5, 9, 15, 30],
+      // 默认每页显示的条数（可修改）
+      PageSize: 5
+    }
+  },
+  created: function () {
+    this.showCustomer()
+  },
+  methods: {
+    /* 显示数据 */
+    showCustomer: function () {
+      this.$axios.post('CustomerCon/customer_selectAll')
+        .then(response => {
+          this.cusList = response
+          this.totalCount = response.length
+        })
     },
-    created:function(){
-      this.showCustomer()
+    // 设置表头的颜色
+    rowClass () {
+      return 'background:#545c64;color:white'
     },
-    methods: {
-      /*显示数据*/
-      showCustomer:function(){
-        this.$axios.post('CustomerCon/customer_selectAll')
-          .then(response=>{
-            this.cusList=response;
-            this.totalCount=response.length;
-          })
-      },
-      //设置表头的颜色
-      rowClass () {
-        return 'background:#545c64;color:white'
-      },
-      //设置指定行、列、具体单元格颜色
-      cellStyle () {
-        return 'background:#545c64;color:white'
-      },
-      handleSizeChange (val) {
-        // 改变每页显示的条数
-        this.PageSize = val
-        // 注意：在改变每页显示的条数时，要将页码显示到第一页
-        this.currentPage = 1
-      },
-      // 显示第几页
-      handleCurrentChange (val) {
-        // 改变默认的页数
-        this.currentPage = val
-      },
-      handleCurrentChange(val) {
-        this.$axios.post('CustomerCon/customer_selectAll?pageNum=' + val + '')
-          .then(response => {
-            this.$router.push({name: 'customer', query: {Ph:response}})
-          })
-      },
-      setStatus:function (row) {
-        console.log(row.cus_id)
-        console.log(row.cus_state)
-        this.$axios.post('CustomerCon/customer_update',this.$qs.stringify(row))
-          .then(response=>{
-            if(response>=1){
-              this.$message({
-                showClose: true,
-                message: '恭喜你，修改成功',
-                type: 'success'
-              });
-              this.updateRolevisible=false;
-              this.showCustomer();
-            }else{
-              this.$message({
-                showClose: true,
-                message: '修改失败！',
-                type: 'error'
-              });
-            }
-          })
-      }
+    // 设置指定行、列、具体单元格颜色
+    cellStyle () {
+      return 'background:#545c64;color:white'
+    },
+    handleSizeChange (val) {
+      // 改变每页显示的条数
+      this.PageSize = val
+      // 注意：在改变每页显示的条数时，要将页码显示到第一页
+      this.currentPage = 1
+    },
+    // 显示第几页
+    handleCurrentChange (val) {
+      // 改变默认的页数
+      this.currentPage = val
+    },
+    handleCurrentChange (val) {
+      this.$axios.post('CustomerCon/customer_selectAll?pageNum=' + val + '')
+        .then(response => {
+          this.$router.push({name: 'customer', query: {Ph: response}})
+        })
+    },
+    setStatus: function (row) {
+      console.log(row.cus_id)
+      console.log(row.cus_state)
+      this.$axios.post('CustomerCon/customer_update', this.$qs.stringify(row))
+        .then(response => {
+          if (response >= 1) {
+            this.$message({
+              showClose: true,
+              message: '恭喜你，修改成功',
+              type: 'success'
+            })
+            this.updateRolevisible = false
+            this.showCustomer()
+          } else {
+            this.$message({
+              showClose: true,
+              message: '修改失败！',
+              type: 'error'
+            })
+          }
+        })
     }
   }
+}
 </script>
 
 <style scoped>

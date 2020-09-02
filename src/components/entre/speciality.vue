@@ -32,8 +32,6 @@
 
     </div>
 
-
-
     <el-dialog width="40%" title="特长修改" :visible="dialogVisible" :before-close="handleClose">
       <el-form label-width="100px" label-suffix="：" :model="speciality" class="form" :rules="rules" ref="fm">
         <el-form-item label="编号" prop="spe_id" >
@@ -72,102 +70,102 @@
 </template>
 
 <script>
-  export default {
-    name: 'speciality',
-    data () {
-      return {
-        dialogVisible: false,
-        dialogVisible1: false,
-        speciality:{},
-        spe_name:"",
-        pageInfo: [],
-        pageSizes: [1, 2, 3, 4, 6],
-        // 每页显示的条数
-        PageSize: 6,
-        // 默认显示第几页
-        currentPage: 1,
-        total:0,
-        rules: {},
-        list: [
-        ]
-      }
-    },
-    created: function () {
-      this.findAll()
-    },
-    methods: {
-      findAll: function (row) {
-        this.$axios.post('Speciality/mhquery?spe_name='+this.spe_name)
-          .then(response => {
-            this.pageInfo = response
-            this.total=this.pageInfo.length;
-          })
-      },
-      showDialog: function (row) {
-        // 显示模态窗口
-        this.dialogVisible = true
-        this.speciality = row
-      },
-      showDialog1: function () {
-        // 显示模态窗口
-        this.dialogVisible1 = true
-        this.speciality = {}
-      },
-      findJy:function(){
-        this.$axios.post('Speciality/query').then(response=>{
-          this.list=response.data
+export default {
+  name: 'speciality',
+  data () {
+    return {
+      dialogVisible: false,
+      dialogVisible1: false,
+      speciality: {},
+      spe_name: '',
+      pageInfo: [],
+      pageSizes: [1, 2, 3, 4, 6],
+      // 每页显示的条数
+      PageSize: 6,
+      // 默认显示第几页
+      currentPage: 1,
+      total: 0,
+      rules: {},
+      list: [
+      ]
+    }
+  },
+  created: function () {
+    this.findAll()
+  },
+  methods: {
+    findAll: function (row) {
+      this.$axios.post('Speciality/mhquery?spe_name=' + this.spe_name)
+        .then(response => {
+          this.pageInfo = response
+          this.total = this.pageInfo.length
         })
-      },
-      add: function () {
-        this.$axios.post('Speciality/add', this.speciality)
-          .then(response => {
-            this.dialogVisible1 = false
-            this.list = response
-            this.findAll();
-          })
-      },
-      edit: function (row) {
-        this.$axios.post('Speciality/update', this.speciality)
+    },
+    showDialog: function (row) {
+      // 显示模态窗口
+      this.dialogVisible = true
+      this.speciality = row
+    },
+    showDialog1: function () {
+      // 显示模态窗口
+      this.dialogVisible1 = true
+      this.speciality = {}
+    },
+    findJy: function () {
+      this.$axios.post('Speciality/query').then(response => {
+        this.list = response.data
+      })
+    },
+    add: function () {
+      this.$axios.post('Speciality/add', this.speciality)
+        .then(response => {
+          this.dialogVisible1 = false
+          this.list = response
+          this.findAll()
+        })
+    },
+    edit: function (row) {
+      this.$axios.post('Speciality/update', this.speciality)
+        .then(response => {
+          this.dialogVisible = false
+          this.list = response
+          this.findAll()
+        })
+    },
+    deleleById: function (row) {
+      this.$confirm('确定删除编号为' + row.spe_id + '的数据？').then(_ => {
+        this.$axios.post('Speciality/delete?spe_id=' + row.spe_id)
           .then(response => {
             this.dialogVisible = false
             this.list = response
-            this.findAll();
+            this.findAll()
           })
-      },
-      deleleById: function (row) {
-        this.$confirm('确定删除编号为'+row.spe_id+'的数据？').then(_=> {
-          this.$axios.post('Speciality/delete?spe_id=' + row.spe_id)
-            .then(response => {
-              this.dialogVisible = false
-              this.list = response
-              this.findAll();
-            })
-        })
-      },
-      handleClose (done) {
-        this.$confirm('确认关闭?').then(_ => {
-          this.dialogVisible = false
-          this.dialogVisible1 = false
-        }).catch(_ => {})
-      }
-      ,handleSizeChange(val) {
-        this.PageSize = val
-        // 注意：在改变每页显示的条数时，要将页码显示到第一页
-        this.currentPage = 1
-      },
-      handleCurrentChange(val) {
-        this.currentPage = val
-      },
-      // 设置表头的颜色
-      rowClass () {
-        return 'background:#545c64;color:white'
-      },
-      // 设置指定行、列、具体单元格颜色
-      cellStyle () {
-        return 'background:#545c64;color:white'
-      }
+      })
+    },
+    handleClose (done) {
+      this.$confirm('确认关闭?').then(_ => {
+        this.dialogVisible = false
+        this.dialogVisible1 = false
+      }).catch(_ => {})
+    },
+    handleSizeChange (val) {
+      this.PageSize = val
+      // 注意：在改变每页显示的条数时，要将页码显示到第一页
+      this.currentPage = 1
+    },
+    handleCurrentChange (val) {
+      this.currentPage = val
+    },
+    // 设置表头的颜色
+    rowClass () {
+      return 'background:#545c64;color:white'
+    },
+    // 设置指定行、列、具体单元格颜色
+    cellStyle () {
+      return 'background:#545c64;color:white'
     }
   }
+}
 </script>
 
 <style scoped>

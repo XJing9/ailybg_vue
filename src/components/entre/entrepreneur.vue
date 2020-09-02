@@ -6,7 +6,6 @@
 
     <el-button type="warning" @click="showDialog1()">添加</el-button>
 
-
     <el-table :data="pageInfo.slice((currentPage-1)*PageSize,currentPage*PageSize) "
               style="width: 100%;margin-bottom: 20px;"
               :header-cell-style="rowClass"
@@ -61,7 +60,7 @@
                      :inactive-value="2" size="small"
                      @change="setStatus(row)"/>
           <span v-if="+row.ent_state===1">已启用</span>
-          <span v-else-if="+row.ent_state===2">以禁用</span>
+          <span v-else-if="+row.ent_state===2">已禁用</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" fixed="right" width="100px">
@@ -76,7 +75,6 @@
         </template>
       </el-table-column>
     </el-table>
-
 
     <el-dialog width="40%" title="发布职位信息" :visible="dialogVisible2" :before-close="handleClose">
       <el-table :data="listissent" style="width: 100%">
@@ -120,7 +118,6 @@
         </el-table-column>
       </el-table>
     </el-dialog>
-
 
     <el-dialog width="50%" title="添加物品" :visible="dialogVisible1" :before-close="handleClose">
       <el-form label-width="100px" label-suffix="：" :model="entreprenenur" class="form" :rules="rules" ref="fm">
@@ -192,7 +189,6 @@
       </div>
     </el-dialog>
 
-
     <el-dialog width="40%" title="物品修改" :visible="dialogVisible" :before-close="handleClose">
       <el-form label-width="100px" label-suffix="：" :model="entreprenenur" class="form" :rules="rules" ref="fm">
         <el-form-item label="编号" prop="ent_id" >
@@ -257,7 +253,6 @@
       </div>
     </el-dialog>
 
-
     <!--分页-->
     <div>
       <el-pagination
@@ -274,209 +269,208 @@
 </template>
 
 <script>
-  export default {
-    name: 'entrepreneur',
-    data(){
-      return{
-        dialogVisible: false,
-        dialogVisible1: false,
-        dialogVisible2:false,
-        pageInfo: [],
-        pageSizes: [1, 2, 3, 4, 6],
-        // 每页显示的条数
-        PageSize: 6,
-        // 默认显示第几页
-        currentPage: 1,
-        total:0,
-        ent_name:'',
-        listissent:[],
-        entreprenenur:{
-          ent_name:'',
-          ent_abbreviation:'',
-          ent_nature:'',
-          ent_scale:'',
-          are_id:'',
-          ind_id:'',
-          ent_photo:'',
-          ent_capital:'',
-          ent_url:'',
-          ent_intro:'',
-          ent_introduce:'',
-          ent_logintime:'',
-          ent_license:'',
-          ent_authentication:'',
-          ent_state:''
-        },
-        arelist:[],
-        indlist:[]
+export default {
+  name: 'entrepreneur',
+  data () {
+    return {
+      dialogVisible: false,
+      dialogVisible1: false,
+      dialogVisible2: false,
+      pageInfo: [],
+      pageSizes: [1, 2, 3, 4, 6],
+      // 每页显示的条数
+      PageSize: 6,
+      // 默认显示第几页
+      currentPage: 1,
+      total: 0,
+      ent_name: '',
+      listissent: [],
+      entreprenenur: {
+        ent_name: '',
+        ent_abbreviation: '',
+        ent_nature: '',
+        ent_scale: '',
+        are_id: '',
+        ind_id: '',
+        ent_photo: '',
+        ent_capital: '',
+        ent_url: '',
+        ent_intro: '',
+        ent_introduce: '',
+        ent_logintime: '',
+        ent_license: '',
+        ent_authentication: '',
+        ent_state: ''
+      },
+      arelist: [],
+      indlist: []
 
-      }
+    }
+  },
+  created: function () {
+    this.findAll()
+  },
+  methods: {
+    /* 显示数据 */
+    showDialog: function (row) {
+      // 显示模态窗口
+      this.dialogVisible = true
+      this.entreprenenur = row
+      this.findare()
+      this.findind()
     },
-    created:function(){
-      this.findAll();
+    showDialog1: function () {
+      // 显示模态窗口
+      this.dialogVisible1 = true
+      this.entreprenenur = {}
+      this.findare()
+      this.findind()
     },
-    methods:{
-      /*显示数据*/
-      showDialog: function (row) {
-        // 显示模态窗口
-        this.dialogVisible = true
-        this.entreprenenur = row
-        this.findare()
-        this.findind()
-      },
-      showDialog1: function () {
-        // 显示模态窗口
-        this.dialogVisible1 = true
-        this.entreprenenur = {}
-        this.findare()
-        this.findind()
-      },
-      showDialog2: function(row){
-        //显示模态窗口
-        //alert(row.ent_id)
-        this.dialogVisible2=true
-        this.entreprenenur=row
-        this.findissent(row)
-      },
-      deleleById: function (row) {
-        this.$confirm('确定删除编号为'+row.ent_id+'的数据？').then(_=> {
-          this.$axios.post('Entrepreneur/delete?ent_id=' + row.ent_id)
-            .then(response => {
-              this.dialogVisible = false
-              this.pageInfo = response
-              this.findAll();
-            })
+    showDialog2: function (row) {
+      // 显示模态窗口
+      // alert(row.ent_id)
+      this.dialogVisible2 = true
+      this.entreprenenur = row
+      this.findissent(row)
+    },
+    deleleById: function (row) {
+      this.$confirm('确定删除编号为' + row.ent_id + '的数据？').then(_ => {
+        this.$axios.post('Entrepreneur/delete?ent_id=' + row.ent_id)
+          .then(response => {
+            this.dialogVisible = false
+            this.pageInfo = response
+            this.findAll()
+          })
+      })
+    },
+    findAll: function () {
+      this.$axios.post('Entrepreneur/query?ent_name=' + this.ent_name)
+        .then(response => {
+          this.pageInfo = response
+          this.total = this.pageInfo.length
         })
-      },
-      findAll: function () {
-        this.$axios.post('Entrepreneur/query?ent_name='+this.ent_name)
-          .then(response => {
-            this.pageInfo = response;
-            this.total=this.pageInfo.length;
-          })
-      },
-      findissent:function(row){
-        this.$axios.post('Entrepreneur/queryissent2?ent_id=' + row.ent_id)
-          .then(response => {
-            this.listissent = response
-          })
-      },
-      findare: function () {
-        this.$axios.post('Entrepreneur/queryare')
-          .then(response => {
-            this.arelist = response
-          })
-      },
-      findind: function () {
-        this.$axios.post('Entrepreneur/queryind')
-          .then(response => {
-            this.indlist = response
-          })
-      },
-      add: function () {
-        this.$axios.post('Entrepreneur/listquery').then(response=>{
-          this.listquery=response
-          for (var i=0;i<this.listquery.length;i++){
-            var name1=this.listquery[i].ent_name
-            if (this.entreprenenur.ent_name===name1){
-              this.$message({
-                message: '相同企业不能重复添加！',
-                type: 'error'
-              });
-              return false
-            }
-          }
-          if (this.entreprenenur.ent_name==null || this.entreprenenur.ent_abbreviation==null ||
-            this.entreprenenur.ent_nature==null || this.entreprenenur.ent_scale==null ||
-            this.entreprenenur.ent_photo==null || this.entreprenenur.ent_capital==null ||
-            this.entreprenenur.ent_url==null || this.entreprenenur.ent_intro==null ||
-            this.entreprenenur.ent_introduce==null || this.entreprenenur.ent_logintime==null ||
-            this.entreprenenur.ent_license==null
-          )
-          {
+    },
+    findissent: function (row) {
+      this.$axios.post('Entrepreneur/queryissent2?ent_id=' + row.ent_id)
+        .then(response => {
+          this.listissent = response
+        })
+    },
+    findare: function () {
+      this.$axios.post('Entrepreneur/queryare')
+        .then(response => {
+          this.arelist = response
+        })
+    },
+    findind: function () {
+      this.$axios.post('Entrepreneur/queryind')
+        .then(response => {
+          this.indlist = response
+        })
+    },
+    add: function () {
+      this.$axios.post('Entrepreneur/listquery').then(response => {
+        this.listquery = response
+        for (var i = 0; i < this.listquery.length; i++) {
+          var name1 = this.listquery[i].ent_name
+          if (this.entreprenenur.ent_name === name1) {
             this.$message({
-              message: '所有添加字段不能为空！',
+              message: '相同企业不能重复添加！',
               type: 'error'
-            });
+            })
             return false
-          }else{
-            this.$axios.post('Entrepreneur/add', this.entreprenenur)
-              .then(response => {
-                this.dialogVisible1 = false
-                this.list = response
-                this.findAll();
-              })
           }
-        }).catch(error=>{
-          alert(error)
+        }
+        if (this.entreprenenur.ent_name == null || this.entreprenenur.ent_abbreviation == null ||
+            this.entreprenenur.ent_nature == null || this.entreprenenur.ent_scale == null ||
+            this.entreprenenur.ent_photo == null || this.entreprenenur.ent_capital == null ||
+            this.entreprenenur.ent_url == null || this.entreprenenur.ent_intro == null ||
+            this.entreprenenur.ent_introduce == null || this.entreprenenur.ent_logintime == null ||
+            this.entreprenenur.ent_license == null
+        ) {
+          this.$message({
+            message: '所有添加字段不能为空！',
+            type: 'error'
+          })
+          return false
+        } else {
+          this.$axios.post('Entrepreneur/add', this.entreprenenur)
+            .then(response => {
+              this.dialogVisible1 = false
+              this.list = response
+              this.findAll()
+            })
+        }
+      }).catch(error => {
+        alert(error)
+      })
+    },
+    edit: function (row) {
+      this.$axios.post('Entrepreneur/update', this.entreprenenur)
+        .then(response => {
+          this.dialogVisible = false
+          this.list = response
+          console.log(this.list)
+          this.findAll()
         })
-      },
-      edit: function (row) {
-        this.$axios.post('Entrepreneur/update', this.entreprenenur)
+    },
+    deleleById2: function (row) {
+      // alert(row.iss_id)
+      this.$confirm('确定删除编号为' + row.iss_id + '的数据？').then(_ => {
+        this.$axios.post('Issue_position/delete?iss_id=' + row.iss_id)
           .then(response => {
             this.dialogVisible = false
             this.list = response
-            console.log(this.list)
-            this.findAll();
+            // alert(1)
+            this.findissent(row)
           })
-      },
-      deleleById2: function (row) {
-        //alert(row.iss_id)
-        this.$confirm('确定删除编号为'+row.iss_id+'的数据？').then(_=>{
-          this.$axios.post('Issue_position/delete?iss_id='+  row.iss_id)
-            .then(response => {
-              this.dialogVisible = false
-              this.list = response
-              //alert(1)
-              this.findissent(row)
+      })
+    },
+    setStatus: function (row) {
+      console.log(row)
+      this.$axios.post('Entrepreneur/updzt', row)
+        .then(response => {
+          if (response > 0) {
+            console.info(response)
+            this.$message({
+              message: '修改成功',
+              type: 'success'
             })
+            this.findAll()
+          } else {
+            console.info(response)
+            this.$message({
+              message: '修改失败！',
+              type: 'error'
+            })
+          }
         })
-      },
-      setStatus:function (row) {
-        console.log(row)
-        this.$axios.post('Entrepreneur/updzt',row)
-          .then(response=>{
-            if(response>0){
-              console.info(response)
-              this.$message({
-                message: '修改成功',
-                type: 'success'
-              });
-              this.findAll()
-            }else{
-              console.info(response)
-              this.$message({
-                message: '修改失败！',
-                type: 'error'
-              });
-            }
-          })
-      },
-    handleSizeChange(val) {
+    },
+    handleSizeChange (val) {
       this.PageSize = val
       // 注意：在改变每页显示的条数时，要将页码显示到第一页
       this.currentPage = 1
     },
-    handleCurrentChange(val) {
+    handleCurrentChange (val) {
       this.currentPage = val
     },
-      // 设置表头的颜色
-      rowClass () {
-        return 'background:#545c64;color:white'
-      },
-      // 设置指定行、列、具体单元格颜色
-      cellStyle () {
-        return 'background:#545c64;color:white'
-      },
-      handleClose (done) {
-        this.$confirm('确认关闭?').then(_ => {
-          this.dialogVisible = false
-          this.dialogVisible1 = false
-          this.dialogVisible2=false
-        }).catch(_ => {})
-      }
+    // 设置表头的颜色
+    rowClass () {
+      return 'background:#545c64;color:white'
+    },
+    // 设置指定行、列、具体单元格颜色
+    cellStyle () {
+      return 'background:#545c64;color:white'
+    },
+    handleClose (done) {
+      this.$confirm('确认关闭?').then(_ => {
+        this.dialogVisible = false
+        this.dialogVisible1 = false
+        this.dialogVisible2 = false
+      }).catch(_ => {})
     }
   }
+}
 </script>
 
 <style scoped>

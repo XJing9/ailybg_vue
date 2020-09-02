@@ -35,7 +35,6 @@
       </el-table-column>
     </el-table>
 
-
     <div>
       <el-pagination
         layout="total, sizes, prev, pager, next, jumper"
@@ -47,8 +46,6 @@
         @current-change="handleCurrentChange">
       </el-pagination>
     </div>
-
-
 
     <el-dialog width="40%" title="物品修改" :visible="dialogVisible" :before-close="handleClose">
       <el-form label-width="100px" label-suffix="：" :model="issue_position" class="form" :rules="rules" ref="fm">
@@ -101,7 +98,6 @@
         <el-button type="success" @click="dialogVisible = false">取 消</el-button>
       </div>
     </el-dialog>
-
 
     <el-dialog width="50%" title="添加物品" :visible="dialogVisible1" :before-close="handleClose">
       <el-form label-width="100px" label-suffix="：" :model="issue_position" class="form" :rules="rules" ref="fm">
@@ -161,109 +157,109 @@
 </template>
 
 <script>
-  import ElSelectDropdown from 'element-ui/packages/select/src/select-dropdown'
-  export default {
-    name: 'issue_position',
-    components: {ElSelectDropdown},
-    data () {
-      return {
-        dialogVisible: false,
-        dialogVisible1: false,
-        complaint:{},
-        pageInfo: [],
-        pageSizes: [1, 2, 3, 4, 6],
-        // 每页显示的条数
-        PageSize: 6,
-        // 默认显示第几页
-        currentPage: 1,
-        total:0,
-        rules: {},
-        list: [
-        ],
-        issue_position:{},
-        entlist:[],
-        iss_name:""
-      }
+import ElSelectDropdown from 'element-ui/packages/select/src/select-dropdown'
+export default {
+  name: 'issue_position',
+  components: {ElSelectDropdown},
+  data () {
+    return {
+      dialogVisible: false,
+      dialogVisible1: false,
+      complaint: {},
+      pageInfo: [],
+      pageSizes: [1, 2, 3, 4, 6],
+      // 每页显示的条数
+      PageSize: 6,
+      // 默认显示第几页
+      currentPage: 1,
+      total: 0,
+      rules: {},
+      list: [
+      ],
+      issue_position: {},
+      entlist: [],
+      iss_name: ''
+    }
+  },
+  created: function () {
+    this.findAll()
+  },
+  methods: {
+    findAll: function () {
+      this.$axios.post('Issue_position/query?iss_name=' + this.iss_name)
+        .then(response => {
+          this.pageInfo = response
+          this.total = this.pageInfo.length
+        })
     },
-    created: function () {
-      this.findAll()
+    findent: function () {
+      this.$axios.post('Issue_position/queryent')
+        .then(response => {
+          this.entlist = response
+        })
     },
-    methods: {
-      findAll: function () {
-        this.$axios.post('Issue_position/query?iss_name='+this.iss_name)
-          .then(response => {
-            this.pageInfo = response
-            this.total=this.pageInfo.length;
-          })
-      },
-      findent: function () {
-        this.$axios.post('Issue_position/queryent')
-          .then(response => {
-            this.entlist = response
-          })
-      },
-      showDialog: function (row) {
-        // 显示模态窗口
-        this.dialogVisible = true
-        this.issue_position = row
-        this.findent()
-      },
-      showDialog1: function () {
-        // 显示模态窗口
-        this.dialogVisible1 = true
-        this.issue_position = {}
-        this.findent()
-      },
-      add: function () {
-        this.$axios.post('Issue_position/add', this.issue_position)
-          .then(response => {
-            this.dialogVisible1 = false
-            this.list = response
-            this.findAll();
-          })
-      },
-      edit: function (row) {
-        this.$axios.post('Issue_position/update', this.issue_position)
+    showDialog: function (row) {
+      // 显示模态窗口
+      this.dialogVisible = true
+      this.issue_position = row
+      this.findent()
+    },
+    showDialog1: function () {
+      // 显示模态窗口
+      this.dialogVisible1 = true
+      this.issue_position = {}
+      this.findent()
+    },
+    add: function () {
+      this.$axios.post('Issue_position/add', this.issue_position)
+        .then(response => {
+          this.dialogVisible1 = false
+          this.list = response
+          this.findAll()
+        })
+    },
+    edit: function (row) {
+      this.$axios.post('Issue_position/update', this.issue_position)
+        .then(response => {
+          this.dialogVisible = false
+          this.list = response
+          this.findAll()
+        })
+    },
+    deleleById: function (row) {
+      this.$confirm('确定删除编号为' + row.iss_id + '的数据？').then(_ => {
+        this.$axios.post('Issue_position/delete?iss_id=' + row.iss_id)
           .then(response => {
             this.dialogVisible = false
             this.list = response
-            this.findAll();
+            this.findAll()
           })
-      },
-      deleleById: function (row) {
-        this.$confirm('确定删除编号为'+row.iss_id+'的数据？').then(_=>{
-          this.$axios.post('Issue_position/delete?iss_id='+  row.iss_id)
-            .then(response => {
-              this.dialogVisible = false
-              this.list = response
-              this.findAll();
-            })
-        })
-      },
-      handleClose (done) {
-        this.$confirm('确认关闭?').then(_ => {
-          this.dialogVisible = false
-          this.dialogVisible1 = false
-        }).catch(_ => {})
-      }
-      ,handleSizeChange(val) {
-        this.PageSize = val
-        // 注意：在改变每页显示的条数时，要将页码显示到第一页
-        this.currentPage = 1
-      },
-      handleCurrentChange(val) {
-        this.currentPage = val
-      },
-      // 设置表头的颜色
-      rowClass () {
-        return 'background:#545c64;color:white'
-      },
-      // 设置指定行、列、具体单元格颜色
-      cellStyle () {
-        return 'background:#545c64;color:white'
-      }
+      })
+    },
+    handleClose (done) {
+      this.$confirm('确认关闭?').then(_ => {
+        this.dialogVisible = false
+        this.dialogVisible1 = false
+      }).catch(_ => {})
+    },
+    handleSizeChange (val) {
+      this.PageSize = val
+      // 注意：在改变每页显示的条数时，要将页码显示到第一页
+      this.currentPage = 1
+    },
+    handleCurrentChange (val) {
+      this.currentPage = val
+    },
+    // 设置表头的颜色
+    rowClass () {
+      return 'background:#545c64;color:white'
+    },
+    // 设置指定行、列、具体单元格颜色
+    cellStyle () {
+      return 'background:#545c64;color:white'
     }
   }
+}
 </script>
 
 <style scoped>

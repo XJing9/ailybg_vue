@@ -1,8 +1,8 @@
 <template>
   <div>
     <el-input prop="wel_name" v-model="wel_name" type="text" placeholder="请输入" style="width:200px;height:30px;"></el-input>
-    <el-button @click="findAll()">搜索</el-button>
-    <el-button @click="showDialog1()">添加</el-button>
+    <el-button type="primary" @click="findAll()">搜索</el-button>
+    <el-button type="primary" @click="showDialog1()">添加</el-button>
     <!-- data:绑定数据  height:声明之后会固定表头-->
     <el-table :data="pageInfo.slice((currentPage-1)*PageSize,currentPage*PageSize) "
               style="width: 100%;margin-bottom: 20px;"
@@ -20,8 +20,12 @@
       </el-table-column>
       <el-table-column label="操作" fixed="right" width="100px">
         <template slot-scope="scope">
-          <el-button type="text" @click="showDialog(scope.row)">修改</el-button>
-          <el-button type="text" @click="deleleById(scope.row)">删除</el-button>
+          <el-button type="primary" icon="el-icon-share" @click="showDialog(scope.row)"></el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" fixed="right" width="100px">
+        <template slot-scope="scope">
+          <el-button type="primary" icon="el-icon-delete" @click="deleleById(scope.row)"></el-button>
         </template>
       </el-table-column>
     </el-table>

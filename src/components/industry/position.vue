@@ -121,26 +121,26 @@ export default {
       pageSizes: [5, 9, 15, 30],
       // 默认每页显示的条数（可修改）
       PageSize: 5,
-      posList:{},
-      updatePosList:{},
-      indList:{},
-      addvisible:false,
-      updatevisible:false,
-      updateBtnLoading:false,
-      addBtnLoading:false
+      posList: {},
+      updatePosList: {},
+      indList: {},
+      addvisible: false,
+      updatevisible: false,
+      updateBtnLoading: false,
+      addBtnLoading: false
     }
   },
   created: function () {
-    this.showPos();
+    this.showPos()
   },
   methods: {
-    /*显示数据*/
-    showPos:function(){
+    /* 显示数据 */
+    showPos: function () {
       this.$axios.post('PosCon/pos_query')
         .then(response => {
-          this.posList=response;
+          this.posList = response
           console.log(this.posList)
-          this.totalCount=response.length;
+          this.totalCount = response.length
         })
     },
     handleSizeChange (val) {
@@ -162,97 +162,97 @@ export default {
     cellStyle () {
       return 'background:#545c64;color:white'
     },
-    /*添加初始化*/
-    addInit(){
+    /* 添加初始化 */
+    addInit () {
       this.$axios.post('Indus/query')
-        .then(response=>{
-          this.indList=response;
+        .then(response => {
+          this.indList = response
           console.log(this.indList)
         })
     },
-    addPos:function(){
-      this.$axios.post('PosCon/pos_add',this.$qs.stringify(this.updatePosList))
-        .then(response=>{
-          if(response!=null){
+    addPos: function () {
+      this.$axios.post('PosCon/pos_add', this.$qs.stringify(this.updatePosList))
+        .then(response => {
+          if (response != null) {
             this.$message({
               showClose: true,
               message: '恭喜你，添加成功',
               type: 'success'
-            });
-            this.addvisible=false;
-            this.showPos();
-          }else{
+            })
+            this.addvisible = false
+            this.showPos()
+          } else {
             this.$message({
               showClose: true,
               message: '添加失败！',
               type: 'error'
-            });
+            })
           }
         })
     },
-    updatePos:function(){
+    updatePos: function () {
       console.log(this.updatePosList)
-      this.$axios.post('PosCon/pos_update',this.$qs.stringify(this.updatePosList))
-        .then(response=>{
-          if(response!=null){
+      this.$axios.post('PosCon/pos_update', this.$qs.stringify(this.updatePosList))
+        .then(response => {
+          if (response != null) {
             this.$message({
               showClose: true,
               message: '恭喜你，修改成功',
               type: 'success'
-            });
-            this.updatevisible=false;
-            this.shouPos();
-          }else{
+            })
+            this.updatevisible = false
+            this.shouPos()
+          } else {
             this.$message({
               showClose: true,
               message: '修改失败！',
               type: 'error'
-            });
+            })
           }
         })
     },
-    showPermissionDialog:function(row){
-      this.updatePosList=row;
+    showPermissionDialog: function (row) {
+      this.updatePosList = row
       console.log(row)
-      this.addInit();
+      this.addInit()
     },
-    /*修改状态*/
-    setStatus:function (row) {
-      this.$axios.post('PosCon/updateState',this.$qs.stringify(row))
-        .then(response=>{
-          if(response>=1){
+    /* 修改状态 */
+    setStatus: function (row) {
+      this.$axios.post('PosCon/updateState', this.$qs.stringify(row))
+        .then(response => {
+          if (response >= 1) {
             this.$message({
               showClose: true,
               message: '恭喜你，修改成功',
               type: 'success'
-            });
+            })
             this.showPos()
-          }else{
+          } else {
             this.$message({
               showClose: true,
               message: '修改失败！',
               type: 'error'
-            });
+            })
           }
         })
     },
-    /*删除*/
-    deletePos:function(row){
-      this.$axios.post('PosCon/pos_delete',this.$qs.stringify(row))
-        .then(response=>{
-          if(response!=null){
+    /* 删除 */
+    deletePos: function (row) {
+      this.$axios.post('PosCon/pos_delete', this.$qs.stringify(row))
+        .then(response => {
+          if (response != null) {
             this.$message({
               showClose: true,
               message: '恭喜你，删除成功',
               type: 'success'
-            });
-            this.showPos();
-          }else{
+            })
+            this.showPos()
+          } else {
             this.$message({
               showClose: true,
               message: '删除失败！',
               type: 'error'
-            });
+            })
           }
         })
     }

@@ -46,11 +46,11 @@
 <script>
 export default {
   name: 'area',
-  data(){
-    return{
-      addvisible:false,
-      updatevisible:false,
-      areList:{},
+  data () {
+    return {
+      addvisible: false,
+      updatevisible: false,
+      areList: {},
       currentPage: 1,
       // 总条数，根据接口获取数据长度(注意：这里不能为空)
       totalCount: 0,
@@ -60,16 +60,16 @@ export default {
       PageSize: 5
     }
   },
-  created:function () {
-    this.showAre();
+  created: function () {
+    this.showAre()
   },
-  methods:{
-    /*显示数据*/
-    showAre(){
+  methods: {
+    /* 显示数据 */
+    showAre () {
       this.$axios.post('areaCon/queryAre')
-        .then(response=>{
-          this.areList=response;
-          this.totalCount=response.length;
+        .then(response => {
+          this.areList = response
+          this.totalCount = response.length
         })
     },
     // 设置表头的颜色
