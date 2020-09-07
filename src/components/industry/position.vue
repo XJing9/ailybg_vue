@@ -122,7 +122,9 @@ export default {
       // 默认每页显示的条数（可修改）
       PageSize: 5,
       posList: {},
-      updatePosList: {},
+      updatePosList: {
+        pos_name: ''
+      },
       indList: {},
       addvisible: false,
       updatevisible: false,
@@ -171,24 +173,32 @@ export default {
         })
     },
     addPos: function () {
-      this.$axios.post('PosCon/pos_add', this.$qs.stringify(this.updatePosList))
-        .then(response => {
-          if (response != null) {
-            this.$message({
-              showClose: true,
-              message: '恭喜你，添加成功',
-              type: 'success'
-            })
-            this.addvisible = false
-            this.showPos()
-          } else {
-            this.$message({
-              showClose: true,
-              message: '添加失败！',
-              type: 'error'
-            })
-          }
+      if (this.updatePosList.pos_name === '' || this.updatePosList.pos_name == null) {
+        this.$message({
+          message: '不能为空',
+          type: 'error'
         })
+        return false
+      } else {
+        this.$axios.post('PosCon/pos_add', this.$qs.stringify(this.updatePosList))
+          .then(response => {
+            if (response != null) {
+              this.$message({
+                showClose: true,
+                message: '恭喜你，添加成功',
+                type: 'success'
+              })
+              this.addvisible = false
+              this.showPos()
+            } else {
+              this.$message({
+                showClose: true,
+                message: '添加失败！',
+                type: 'error'
+              })
+            }
+          })
+      }
     },
     updatePos: function () {
       console.log(this.updatePosList)

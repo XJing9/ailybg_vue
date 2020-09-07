@@ -20,8 +20,8 @@
             <el-form-item label="期望薪资 ：">
               <span>{{ props.row.res_pay }}</span>
             </el-form-item>
-            <el-form-item label="照片/作品 ：">
-              <span>{{ props.row.res_photo }}</span>
+            <el-form-item label="期望行业：">
+              <span>{{ props.row.res_industry }}</span>
             </el-form-item>
             <el-form-item label="用户编号 ：">
               <span>{{ props.row.cus_name }}</span>
@@ -34,7 +34,7 @@
       <el-table-column prop="res_education" label="最高教育程度"></el-table-column>
       <el-table-column prop="res_jobstate" label="求职状态"></el-table-column>
       <el-table-column prop="res_workcategory" label="工作性质"></el-table-column>
-      <el-table-column prop="res_industry" label="期望行业"></el-table-column>
+      <el-table-column prop="res_photo" label="照片/作品 ："></el-table-column>
       <el-table-column show-overflow-tooltip prop="res_state" fixed="right" label="状态" align="center" width="120">
         <template slot-scope="{row}">
           <el-switch v-model="row.res_state" :active-value="1"

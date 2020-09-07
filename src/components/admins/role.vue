@@ -121,7 +121,9 @@ export default {
       RoleQuery: '',
       updateRolevisible: false,
       addRolevisible: false,
-      role: {},
+      role: {
+        rol_name: ''
+      },
       authorityVisible: false,
       authorityList: {},
       addBtnLoading: false,
@@ -267,24 +269,32 @@ export default {
         })
     },
     addRole: function () {
-      this.$axios.post('RoleCon/role_insert', this.$qs.stringify(this.role))
-        .then(response => {
-          if (response >= 1) {
-            this.$message({
-              showClose: true,
-              message: '恭喜你，添加成功',
-              type: 'success'
-            })
-            this.addRolevisible = false
-            this.showRole()
-          } else {
-            this.$message({
-              showClose: true,
-              message: '添加失败！',
-              type: 'error'
-            })
-          }
+      if (this.role.rol_name == null) {
+        this.$message({
+          message: '不能为空',
+          type: 'error'
         })
+        return false
+      } else {
+        this.$axios.post('RoleCon/role_insert', this.$qs.stringify(this.role))
+          .then(response => {
+            if (response >= 1) {
+              this.$message({
+                showClose: true,
+                message: '恭喜你，添加成功',
+                type: 'success'
+              })
+              this.addRolevisible = false
+              this.showRole()
+            } else {
+              this.$message({
+                showClose: true,
+                message: '添加失败！',
+                type: 'error'
+              })
+            }
+          })
+      }
     }
   }
 }

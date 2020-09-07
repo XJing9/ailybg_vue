@@ -1,8 +1,8 @@
 <template>
   <div>
     <el-input prop="spe_name" v-model="spe_name" type="text" placeholder="请输入" style="width:200px;height:30px;"></el-input>
-    <el-button @click="findAll()">搜索</el-button>
-    <el-button @click="showDialog1()">添加</el-button>
+    <el-button type="primary" @click="findAll()">搜索</el-button>
+    <el-button type="primary" @click="showDialog1()">添加</el-button>
     <!-- data:绑定数据  height:声明之后会固定表头-->
     <el-table :data="pageInfo.slice((currentPage-1)*PageSize,currentPage*PageSize) " style="width: 100%;margin-bottom: 20px;"
               :header-cell-style="rowClass"
@@ -13,8 +13,12 @@
       <el-table-column prop="spe_name" label="特长"></el-table-column>
       <el-table-column label="操作" fixed="right" width="100px">
         <template slot-scope="scope">
-          <el-button type="text" @click="showDialog(scope.row)">修改</el-button>
-          <el-button type="text" @click="deleleById(scope.row)">删除</el-button>
+          <el-button style="background-color:darkgrey;border-color: darkgrey" type="primary" size="mini" icon="el-icon-edit" @click="showDialog(scope.row)">修改</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" fixed="right" width="100px">
+        <template slot-scope="scope">
+          <el-button type="danger" size="mini" class="el-icon-delete" @click="deleleById(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -76,7 +80,9 @@ export default {
     return {
       dialogVisible: false,
       dialogVisible1: false,
-      speciality: {},
+      speciality: {
+        spe_name: ''
+      },
       spe_name: '',
       pageInfo: [],
       pageSizes: [1, 2, 3, 4, 6],
@@ -117,12 +123,33 @@ export default {
       })
     },
     add: function () {
-      this.$axios.post('Speciality/add', this.speciality)
-        .then(response => {
-          this.dialogVisible1 = false
-          this.list = response
-          this.findAll()
-        })
+      this.$axios('Speciality/queryl').then(response => {
+        this.list = response
+        for (var i = 0; i < this.list.length; i++) {
+          var name1 = this.list[i].spe_name
+          if (this.speciality.spe_name === name1) {
+            this.$message({
+              message: '相同的不能重复添加',
+              type: 'error'
+            })
+            return false
+          }
+        }
+        if (this.speciality.spe_name == null) {
+          this.$message({
+            message: '所有字段不能为空',
+            type: 'error'
+          })
+          return false
+        } else {
+          this.$axios.post('Speciality/add', this.speciality)
+            .then(response => {
+              this.dialogVisible1 = false
+              this.list = response
+              this.findAll()
+            })
+        }
+      })
     },
     edit: function (row) {
       this.$axios.post('Speciality/update', this.speciality)

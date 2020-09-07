@@ -4,7 +4,7 @@
 
     <el-button icon="el-icon-search" circle @click="findAll()"></el-button>
 
-    <el-button type="warning" @click="showDialog1()">添加</el-button>
+    <!--<el-button type="warning" @click="showDialog1()">添加</el-button>-->
 
     <el-table :data="pageInfo.slice((currentPage-1)*PageSize,currentPage*PageSize) "
               style="width: 100%;margin-bottom: 20px;"
@@ -13,8 +13,8 @@
       <el-table-column type="expand" >
         <template slot-scope="props">
           <el-form label-position="left" inline class="demo-table-expand">
-            <el-form-item label="行业logo ：">
-              <span>{{ props.row.ent_photo }}</span>
+            <el-form-item label="企业简称 ：">
+              <span>{{ props.row.ent_abbreviation }}</span>
             </el-form-item>
             <el-form-item label="注册资金 ：">
               <span>{{ props.row.ent_capital }}</span>
@@ -31,8 +31,8 @@
             <el-form-item label="最近登录时间 ：">
               <span>{{ props.row.ent_logintime }}</span>
             </el-form-item>
-            <el-form-item label="营业执照 ：">
-              <span>{{ props.row.ent_license }}</span>
+            <el-form-item label="企业性质 ：">
+              <span>{{ props.row.ent_nature }}</span>
             </el-form-item>
           </el-form>
         </template>
@@ -40,8 +40,8 @@
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column prop="ent_id" label="编号"></el-table-column>
       <el-table-column prop="ent_name" label="企业名称"></el-table-column>
-      <el-table-column prop="ent_abbreviation" label="企业简称"></el-table-column>
-      <el-table-column prop="ent_nature" label="企业性质"></el-table-column>
+      <el-table-column prop="ent_photo" label="行业logo"></el-table-column>
+      <el-table-column prop="ent_license" label="营业执照"></el-table-column>
       <el-table-column prop="ent_scale" label="企业规模"></el-table-column>
       <el-table-column prop="are_name" label="所在地区"></el-table-column>
       <el-table-column prop="ind_name" label="所属行业"></el-table-column>
@@ -65,13 +65,22 @@
       </el-table-column>
       <el-table-column label="操作" fixed="right" width="100px">
         <template slot-scope="scope">
-          <el-button type="text" @click="showDialog(scope.row)">修改</el-button>
-          <el-button type="text" @click="deleleById(scope.row)">删除</el-button>
+          <el-button style="background-color:darkgrey;border-color: darkgrey" type="primary" size="mini" icon="el-icon-edit" @click="showDialog(scope.row)">修改</el-button>
         </template>
       </el-table-column>
-      <el-table-column  prop="ent_id" label="查看" fixed="right" width="100px">
+      <el-table-column label="操作" fixed="right" width="100px">
         <template slot-scope="scope">
-          <el-button type="primary" round @click="showDialog2(scope.row)">查看</el-button>
+          <el-button type="danger" size="mini" class="el-icon-delete" @click="deleleById(scope.row)">删除</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column  prop="ent_id" label="职位" fixed="right" width="100px">
+        <template slot-scope="scope">
+          <el-button type="primary" round @click="showDialog2(scope.row)">职位</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column  prop="ent_id" label="地址" fixed="right" width="100px">
+        <template slot-scope="scope">
+          <el-button type="primary" round @click="showDialog3(scope.row)">地址</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -108,12 +117,34 @@
         <el-table-column prop="iss_state" label="状态">
           <template slot-scope="{row: {iss_state}}">
             <span v-if="+iss_state===1">在职</span>
-            <span v-else-if="+iss_state===0">离职</span>
+            <span v-else-if="+iss_state===2">离职</span>
           </template>
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="100px">
           <template slot-scope="scope">
             <el-button type="danger" icon="el-icon-delete" @click="deleleById2(scope.row)"></el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
+
+    <el-dialog width="40%" title="面试地址" :visible="dialogVisible3" :before-close="handleClose">
+      <el-table :data="listintquery" style="width: 100%">
+        <el-table-column label="编号" prop="int_id"></el-table-column>
+        <el-table-column label="联系人" prop="int_name"></el-table-column>
+        <el-table-column label="邮箱" prop="int_email"></el-table-column>
+        <el-table-column label="QQ" prop="int_qq"></el-table-column>
+        <el-table-column label="联系地址" prop="int_reladdress"></el-table-column>
+        <el-table-column label="企业编号" prop="ent_id"></el-table-column>
+        <el-table-column prop="int_state" label="状态">
+          <template slot-scope="{row: {int_state}}">
+            <span v-if="+int_state===1">在</span>
+            <span v-else-if="+int_state===2">不在</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" fixed="right" width="100px">
+          <template slot-scope="scope">
+            <el-button type="danger" icon="el-icon-delete" @click="deleleById3(scope.row)"></el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -276,6 +307,7 @@ export default {
       dialogVisible: false,
       dialogVisible1: false,
       dialogVisible2: false,
+      dialogVisible3: false,
       pageInfo: [],
       pageSizes: [1, 2, 3, 4, 6],
       // 每页显示的条数
@@ -303,8 +335,10 @@ export default {
         ent_state: ''
       },
       arelist: [],
-      indlist: []
-
+      indlist: [],
+      dellist: [],
+      del2list: [],
+      listintquery: []
     }
   },
   created: function () {
@@ -333,14 +367,35 @@ export default {
       this.entreprenenur = row
       this.findissent(row)
     },
+    showDialog3: function (row) {
+      this.dialogVisible3 = true
+      this.entreprenenur = row
+      this.findintall(row)
+    },
     deleleById: function (row) {
-      this.$confirm('确定删除编号为' + row.ent_id + '的数据？').then(_ => {
-        this.$axios.post('Entrepreneur/delete?ent_id=' + row.ent_id)
-          .then(response => {
-            this.dialogVisible = false
-            this.pageInfo = response
-            this.findAll()
+      this.$confirm('确定要删除编号为' + row.ent_id + '的数据？').then(_ => {
+        this.$axios.post('Entrepreneur/queryd?ent_id=' + row.ent_id).then(res => {
+          this.$axios.post('Entrepreneur/query2d?ent_id=' + row.ent_id).then(response => {
+            this.dellist = res
+            console.info(this.dellist.length)
+            this.del2list = response
+            console.info(this.del2list.length)
+            if (this.dellist.length > 0 || this.del2list.length > 0) {
+              this.$message({
+                message: '该目标下有外键不能删除',
+                type: 'error'
+              })
+              return false
+            } else {
+              this.$axios.post('Entrepreneur/delete?ent_id=' + row.ent_id)
+                .then(response => {
+                  this.dialogVisible = false
+                  this.pageInfo = response
+                  this.findAll()
+                })
+            }
           })
+        })
       })
     },
     findAll: function () {
@@ -355,6 +410,11 @@ export default {
         .then(response => {
           this.listissent = response
         })
+    },
+    findintall: function (row) {
+      this.$axios.post('Entrepreneur/query2d?ent_id=' + row.ent_id).then(response => {
+        this.listintquery = response
+      })
     },
     findare: function () {
       this.$axios.post('Entrepreneur/queryare')
@@ -415,7 +475,6 @@ export default {
         })
     },
     deleleById2: function (row) {
-      // alert(row.iss_id)
       this.$confirm('确定删除编号为' + row.iss_id + '的数据？').then(_ => {
         this.$axios.post('Issue_position/delete?iss_id=' + row.iss_id)
           .then(response => {
@@ -424,6 +483,15 @@ export default {
             // alert(1)
             this.findissent(row)
           })
+      })
+    },
+    deleleById3: function (row) {
+      this.$confirm('确定要删除编号为' + row.int_id + '的数据?').then(_ => {
+        this.$axios.post('Interview/delete?int_id=' + row.int_id).then(response => {
+          this.dialogVisible = false
+          this.list = response
+          this.findintall(row)
+        })
       })
     },
     setStatus: function (row) {
@@ -467,6 +535,7 @@ export default {
         this.dialogVisible = false
         this.dialogVisible1 = false
         this.dialogVisible2 = false
+        this.dialogVisible3 = false
       }).catch(_ => {})
     }
   }

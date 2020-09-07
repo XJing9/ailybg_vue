@@ -96,7 +96,6 @@
           <el-input clearable v-model="updateIndList.pay_name" name="pay_name" size="small" placeholder="请输入服务名称"/>
         </el-form-item>
 
-
         <el-form-item label="价格" prop="pay_price">
           <el-input clearable v-model="updateIndList.pay_price" name="pay_price" size="small" placeholder="请输入价格"/>
         </el-form-item>
@@ -123,151 +122,151 @@
 </template>
 
 <script>
-  export default {
-    name: 'pay',
-    data () {
-      return {
-        currentPage: 1,
-        // 总条数，根据接口获取数据长度(注意：这里不能为空)
-        totalCount: 0,
-        // 个数选择器（可修改）
-        pageSizes: [5, 9, 15, 30],
-        // 默认每页显示的条数（可修改）
-        PageSize: 5,
-        indList:{},
-        updateIndList:{},
-        induList:{},
-        addvisible:false,
-        updatevisible:false,
-        addBtnLoading:false,
-        updateBtnLoading:false
-      }
+export default {
+  name: 'pay',
+  data () {
+    return {
+      currentPage: 1,
+      // 总条数，根据接口获取数据长度(注意：这里不能为空)
+      totalCount: 0,
+      // 个数选择器（可修改）
+      pageSizes: [5, 9, 15, 30],
+      // 默认每页显示的条数（可修改）
+      PageSize: 5,
+      indList: {},
+      updateIndList: {},
+      induList: {},
+      addvisible: false,
+      updatevisible: false,
+      addBtnLoading: false,
+      updateBtnLoading: false
+    }
+  },
+  created: function () {
+    this.showInd()
+  },
+  methods: {
+    /* 显示数据 */
+    showInd: function () {
+      this.$axios.post('pay/query')
+        .then(response => {
+          this.indList = response
+          this.totalCount = response.length
+        })
     },
-    created: function () {
-      this.showInd();
+    handleSizeChange (val) {
+      // 改变每页显示的条数
+      this.PageSize = val
+      // 注意：在改变每页显示的条数时，要将页码显示到第一页
+      this.currentPage = 1
     },
-    methods: {
-      /* 显示数据 */
-      showInd: function () {
-        this.$axios.post('pay/query')
-          .then(response => {
-            this.indList=response;
-            this.totalCount=response.length;
-          })
-      },
-      handleSizeChange (val) {
-        // 改变每页显示的条数
-        this.PageSize = val
-        // 注意：在改变每页显示的条数时，要将页码显示到第一页
-        this.currentPage = 1
-      },
-      // 显示第几页
-      handleCurrentChange (val) {
-        // 改变默认的页数
-        this.currentPage = val
-      },
-      // 设置表头的颜色
-      rowClass () {
-        return 'background:#545c64;color:white'
-      },
-      // 设置指定行、列、具体单元格颜色
-      cellStyle () {
-        return 'background:#545c64;color:white'
-      },
-     /* /!*添加初始化*!/
+    // 显示第几页
+    handleCurrentChange (val) {
+      // 改变默认的页数
+      this.currentPage = val
+    },
+    // 设置表头的颜色
+    rowClass () {
+      return 'background:#545c64;color:white'
+    },
+    // 设置指定行、列、具体单元格颜色
+    cellStyle () {
+      return 'background:#545c64;color:white'
+    },
+    /* /!*添加初始化*!/
       addInit(){
         this.$axios.post('IndustrysCon/queryAll')
           .then(response=>{
             this.induList=response;
           })
-      },*/
-      addInd:function(){
-        this.$axios.post('pay/add',this.$qs.stringify(this.updateIndList))
-          .then(response=>{
-            if(response!=null){
-              this.$message({
-                showClose: true,
-                message: '恭喜你，添加成功',
-                type: 'success'
-              });
-              this.addvisible=false;
-              this.showInd();
-            }else{
-              this.$message({
-                showClose: true,
-                message: '添加失败！',
-                type: 'error'
-              });
-            }
-          })
-      },
-      updateInd:function(){
-        console.log(this.updateIndList)
-        this.$axios.post('pay/update',this.$qs.stringify(this.updateIndList))
-          .then(response=>{
-            if(response!=null){
-              this.$message({
-                showClose: true,
-                message: '恭喜你，修改成功',
-                type: 'success'
-              });
-              this.updatevisible=false;
-              this.shouInd();
-            }else{
-              this.$message({
-                showClose: true,
-                message: '修改失败！',
-                type: 'error'
-              });
-            }
-          })
-      },
-      showPermissionDialog:function(row){
-        this.updateIndList=row;
-        this.addInit();
-      },
-      /*修改状态*/
-      setStatus:function (row) {
-        this.$axios.post('Indus/updateState',this.$qs.stringify(row))
-          .then(response=>{
-            if(response>=1){
-              this.$message({
-                showClose: true,
-                message: '恭喜你，修改成功',
-                type: 'success'
-              });
-              this.showInd()
-            }else{
-              this.$message({
-                showClose: true,
-                message: '修改失败！',
-                type: 'error'
-              });
-            }
-          })
-      },
-      /*删除*/
-      deleteInd:function(row){
-        this.$axios.post('pay/delete?pay_id='+row.pay_id)
-          .then(response=>{
-            if(response!=null){
-              this.$message({
-                showClose: true,
-                message: '恭喜你，删除成功',
-                type: 'success'
-              });
-              this.showInd();
-            }else{
-              this.$message({
-                showClose: true,
-                message: '删除失败！',
-                type: 'error'
-              });
-            }
-          })
-      }
+      }, */
+    addInd: function () {
+      this.$axios.post('pay/add', this.$qs.stringify(this.updateIndList))
+        .then(response => {
+          if (response != null) {
+            this.$message({
+              showClose: true,
+              message: '恭喜你，添加成功',
+              type: 'success'
+            })
+            this.addvisible = false
+            this.showInd()
+          } else {
+            this.$message({
+              showClose: true,
+              message: '添加失败！',
+              type: 'error'
+            })
+          }
+        })
+    },
+    updateInd: function () {
+      console.log(this.updateIndList)
+      this.$axios.post('pay/update', this.$qs.stringify(this.updateIndList))
+        .then(response => {
+          if (response != null) {
+            this.$message({
+              showClose: true,
+              message: '恭喜你，修改成功',
+              type: 'success'
+            })
+            this.updatevisible = false
+            this.shouInd()
+          } else {
+            this.$message({
+              showClose: true,
+              message: '修改失败！',
+              type: 'error'
+            })
+          }
+        })
+    },
+    showPermissionDialog: function (row) {
+      this.updateIndList = row
+      this.addInit()
+    },
+    /* 修改状态 */
+    setStatus: function (row) {
+      this.$axios.post('Indus/updateState', this.$qs.stringify(row))
+        .then(response => {
+          if (response >= 1) {
+            this.$message({
+              showClose: true,
+              message: '恭喜你，修改成功',
+              type: 'success'
+            })
+            this.showInd()
+          } else {
+            this.$message({
+              showClose: true,
+              message: '修改失败！',
+              type: 'error'
+            })
+          }
+        })
+    },
+    /* 删除 */
+    deleteInd: function (row) {
+      this.$axios.post('pay/delete?pay_id=' + row.pay_id)
+        .then(response => {
+          if (response != null) {
+            this.$message({
+              showClose: true,
+              message: '恭喜你，删除成功',
+              type: 'success'
+            })
+            this.showInd()
+          } else {
+            this.$message({
+              showClose: true,
+              message: '删除失败！',
+              type: 'error'
+            })
+          }
+        })
     }
   }
+}
 </script>
 
 <style scoped>

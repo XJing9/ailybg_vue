@@ -127,7 +127,9 @@ export default {
       // 默认每页显示的条数（可修改）
       PageSize: 5,
       indList: {},
-      updateIndList: {},
+      updateIndList: {
+        ind_name: ''
+      },
       induList: {},
       addvisible: false,
       updatevisible: false,
@@ -174,24 +176,32 @@ export default {
         })
     },
     addInd: function () {
-      this.$axios.post('Indus/insert', this.$qs.stringify(this.updateIndList))
-        .then(response => {
-          if (response != null) {
-            this.$message({
-              showClose: true,
-              message: '恭喜你，添加成功',
-              type: 'success'
-            })
-            this.addvisible = false
-            this.showInd()
-          } else {
-            this.$message({
-              showClose: true,
-              message: '添加失败！',
-              type: 'error'
-            })
-          }
+      if (this.updateIndList.ind_name == null || this.updateIndList.ind_name === '') {
+        this.$message({
+          message: '不能为空',
+          type: 'error'
         })
+        return false
+      } else {
+        this.$axios.post('Indus/insert', this.$qs.stringify(this.updateIndList))
+          .then(response => {
+            if (response != null) {
+              this.$message({
+                showClose: true,
+                message: '恭喜你，添加成功',
+                type: 'success'
+              })
+              this.addvisible = false
+              this.showInd()
+            } else {
+              this.$message({
+                showClose: true,
+                message: '添加失败！',
+                type: 'error'
+              })
+            }
+          })
+      }
     },
     updateInd: function () {
       console.log(this.updateIndList)

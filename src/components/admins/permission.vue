@@ -153,8 +153,15 @@ export default {
       onelist: {
         name: ''
       },
-      twolist: {},
-      tableDatas: {},
+      twolist: {
+        per_name: '',
+        per_url: '',
+        per_icon: ''
+      },
+      tableDatas: {
+        per_name: '',
+        per_icon: ''
+      },
       currentPage: 1,
       // 总条数，根据接口获取数据长度(注意：这里不能为空)
       totalCount: 0,
@@ -204,45 +211,63 @@ export default {
       this.onelist.name = row.per_name
     },
     addTwoPermission: function () {
-      this.$axios.post('PermissionCon/menu_insert', this.$qs.stringify(this.twolist))
-        .then(response => {
-          if (response >= 1) {
-            this.$message({
-              showClose: true,
-              message: '恭喜你，添加成功',
-              type: 'success'
-            })
-            this.addtwovisible = false
-            this.showPermission()
-          } else {
-            this.$message({
-              showClose: true,
-              message: '添加失败！',
-              type: 'error'
-            })
-          }
+      if (this.twolist.per_name == null || this.twolist.per_icon == null || this.twolist.per_url == null ||
+          this.twolist.per_name === '' || this.twolist.per_icon === '' || this.twolist.per_url === '') {
+        this.$message({
+          message: '不能为空',
+          type: 'error'
         })
+        return false
+      } else {
+        console.info(this.twolist.per_name)
+        this.$axios.post('PermissionCon/menu_insert', this.$qs.stringify(this.twolist))
+          .then(response => {
+            if (response >= 1) {
+              this.$message({
+                showClose: true,
+                message: '恭喜你，添加成功',
+                type: 'success'
+              })
+              this.addtwovisible = false
+              this.showPermission()
+            } else {
+              this.$message({
+                showClose: true,
+                message: '添加失败！',
+                type: 'error'
+              })
+            }
+          })
+      }
     },
     addPermission: function () {
       this.tableData.per_parent = 0
-      this.$axios.post('PermissionCon/menu_insert', this.$qs.stringify(this.tableDatas))
-        .then(response => {
-          if (response >= 1) {
-            this.$message({
-              showClose: true,
-              message: '恭喜你，添加成功',
-              type: 'success'
-            })
-            this.addvisible = false
-            this.showPermission()
-          } else {
-            this.$message({
-              showClose: true,
-              message: '添加失败！',
-              type: 'error'
-            })
-          }
+      if (this.tableDatas.per_name == null || this.tableDatas.per_icon == null) {
+        this.$message({
+          message: '不能为空',
+          type: 'error'
         })
+        return false
+      } else {
+        this.$axios.post('PermissionCon/menu_insert', this.$qs.stringify(this.tableDatas))
+          .then(response => {
+            if (response >= 1) {
+              this.$message({
+                showClose: true,
+                message: '恭喜你，添加成功',
+                type: 'success'
+              })
+              this.addvisible = false
+              this.showPermission()
+            } else {
+              this.$message({
+                showClose: true,
+                message: '添加失败！',
+                type: 'error'
+              })
+            }
+          })
+      }
     },
     updatePermission: function () {
       this.$axios.post('PermissionCon/permission_update', this.$qs.stringify(this.tableDatas))

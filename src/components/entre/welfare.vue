@@ -1,8 +1,8 @@
 <template>
   <div>
     <el-input prop="wel_name" v-model="wel_name" type="text" placeholder="请输入" style="width:200px;height:30px;"></el-input>
-    <el-button @click="findAll()">搜索</el-button>
-    <el-button @click="showDialog1()">添加</el-button>
+    <el-button @click="findAll()" type="primary">搜索</el-button>
+    <el-button @click="showDialog1()" type="primary">添加</el-button>
     <!-- data:绑定数据  height:声明之后会固定表头-->
     <el-table :data="pageInfo.slice((currentPage-1)*PageSize,currentPage*PageSize) "
               style="width: 100%;margin-bottom: 20px;"
@@ -15,13 +15,17 @@
       <el-table-column prop="wel_state" label="状态">
         <template slot-scope="{row: {wel_state}}">
           <span v-if="+wel_state === 1">有货</span>
-          <span v-else-if="+ wel_state=== 0">没货</span>
+          <span v-else-if="+ wel_state=== 2">没货</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" fixed="right" width="100px">
         <template slot-scope="scope">
-          <el-button type="text" @click="showDialog(scope.row)">修改</el-button>
-          <el-button type="text" @click="deleleById(scope.row)">删除</el-button>
+          <el-button style="background-color:darkgrey;border-color: darkgrey" type="primary" size="mini" icon="el-icon-edit" @click="showDialog(scope.row)">修改</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" fixed="right" width="100px">
+        <template slot-scope="scope">
+          <el-button type="danger" size="mini" class="el-icon-delete" @click="deleleById(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -59,10 +63,6 @@
     </el-dialog>
     <el-dialog width="40%" title="添加物品" :visible="dialogVisible1" :before-close="handleClose">
       <el-form label-width="100px" label-suffix="：" :model="welfare" class="form" :rules="rules" ref="fm">
-        <!--<el-form-item hidden label="编号" prop="id">-->
-        <!--&lt;!&ndash; 必须去声明绑定的数据模型 &ndash;&gt;-->
-        <!--<el-input ></el-input>-->
-        <!--</el-form-item>-->
         <el-form-item  hidden label="编号" prop="wel_id" >
           <!-- 必须去声明绑定的数据模型 -->
           <el-input  v-model="welfare.wel_id"></el-input>
@@ -89,7 +89,10 @@ export default {
     return {
       dialogVisible: false,
       dialogVisible1: false,
-      welfare: {},
+      welfare: {
+        wel_name: '',
+        wel_state: ''
+      },
       wel_name: '',
       pageInfo: [],
       pageSizes: [1, 2, 3, 4, 6],
@@ -126,12 +129,36 @@ export default {
       this.welfare = {}
     },
     add: function () {
-      this.$axios.post('Welfare/add', this.welfare)
-        .then(response => {
-          this.dialogVisible1 = false
-          this.list = response
-          this.findAll()
-        })
+      this.$axios('Welfare/queryl').then(response => {
+        this.list = response
+        for (var i = 0; i < this.list.length; i++) {
+          var name1 = this.list[i].wel_name
+          if (this.welfare.wel_name === name1) {
+            this.$message({
+              message: '相同物品不能重复添加',
+              type: 'error'
+            })
+            return false
+          }
+        }
+        if (this.welfare.wel_name == null || this.welfare.wel_state == null) {
+          this.$message({
+            message: '所有字段不能为空',
+            type: 'error'
+          })
+          return false
+        } else {
+          this.$axios.post('Welfare/add', this.welfare)
+            .then(response => {
+              this.dialogVisible1 = false
+              this.$message({
+                message: '添加成功',
+                type: 'success'
+              })
+              this.findAll()
+            })
+        }
+      })
     },
     edit: function (row) {
       console.log(this.welfare.wel_id)

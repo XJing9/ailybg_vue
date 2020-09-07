@@ -1,8 +1,8 @@
 <template xmlns:el-table="http://www.w3.org/1999/html">
   <div>
     <el-input prop="iss_name" v-model="iss_name" type="text" placeholder="请输入" style="width:200px;height:30px;"></el-input>
-    <el-button @click="findAll()">搜索</el-button>
-    <el-button type="text" @click="showDialog1()">添加</el-button>
+    <el-button @click="findAll()" type="primary">搜索</el-button>
+    <!--<el-button type="primary" @click="showDialog1()">添加</el-button>-->
     <!-- data:绑定数据  height:声明之后会固定表头-->
     <el-table :data="pageInfo.slice((currentPage-1)*PageSize,currentPage*PageSize) "
               style="width: 100%;margin-bottom: 20px;"
@@ -12,7 +12,7 @@
       <!-- prop显示绑定的数据的属性 -->
       <el-table-column prop="iss_id" label="编号"></el-table-column>
       <el-table-column prop="iss_name" label="职位名称"></el-table-column>
-      <el-table-column prop="ent_name" label="企业编号"></el-table-column>
+      <el-table-column prop="ent_id" label="企业编号"></el-table-column>
       <el-table-column prop="iss_worknature" label="工作性质"></el-table-column>
       <el-table-column prop="iss_count" label="招聘人数"></el-table-column>
       <el-table-column prop="iss_department" label="招聘部门"></el-table-column>
@@ -21,16 +21,25 @@
       <el-table-column prop="iss_age" label="年龄要求范围"></el-table-column>
       <el-table-column prop="iss_address" label="工作地点"></el-table-column>
       <el-table-column prop="iss_describe" label="职位描述"></el-table-column>
-      <el-table-column prop="iss_state" label="状态">
-        <template slot-scope="{row: {iss_state}}">
-          <span v-if="+iss_state===1">在职</span>
-          <span v-else-if="+iss_state===0">离职</span>
+      <el-table-column show-overflow-tooltip prop="iss_state" fixed="right" label="状态" align="center" width="120">
+        <template slot-scope="{row}">
+          <el-switch v-model="row.iss_state" :active-value="1"
+                     active-color="#13ce66"
+                     inactive-color="#ff4949"
+                     :inactive-value="2" size="small"
+                     @change="setStatus(row)"/>
+          <span v-if="+row.iss_state===1">已审核</span>
+          <span v-else-if="+row.iss_state===2">未审核</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" fixed="right" width="100px">
         <template slot-scope="scope">
-          <el-button type="text" @click="showDialog(scope.row)">修改</el-button>
-          <el-button type="text" @click="deleleById(scope.row)">删除</el-button>
+          <el-button style="background-color:darkgrey;border-color: darkgrey" type="primary" size="mini" icon="el-icon-edit" @click="showDialog(scope.row)">修改</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" fixed="right" width="100px">
+        <template slot-scope="scope">
+          <el-button type="danger" size="mini" class="el-icon-delete" @click="deleleById(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -176,7 +185,18 @@ export default {
       rules: {},
       list: [
       ],
-      issue_position: {},
+      issue_position: {
+        iss_name: '',
+        iss_worknature: '',
+        iss_count: '',
+        iss_department: '',
+        iss_education: '',
+        iss_experience: '',
+        iss_age: '',
+        iss_address: '',
+        iss_describe: '',
+        iss_state: ''
+      },
       entlist: [],
       iss_name: ''
     }
@@ -211,12 +231,27 @@ export default {
       this.findent()
     },
     add: function () {
-      this.$axios.post('Issue_position/add', this.issue_position)
-        .then(response => {
-          this.dialogVisible1 = false
-          this.list = response
-          this.findAll()
-        })
+      this.$axios.post('Issue_position/queryl').then(response => {
+        this.list = response
+        if (this.issue_position.iss_name == null || this.issue_position.iss_worknature == null ||
+              this.issue_position.iss_count == null || this.issue_position.iss_department == null ||
+              this.issue_position.iss_education == null || this.issue_position.iss_experience == null ||
+              this.issue_position.iss_age == null || this.issue_position.iss_address == null ||
+              this.issue_position.iss_describe == null || this.issue_position.iss_state == null) {
+          this.$message({
+            message: '所有字段不能为空',
+            type: 'error'
+          })
+          return false
+        } else {
+          this.$axios.post('Issue_position/add', this.issue_position)
+            .then(response => {
+              this.dialogVisible1 = false
+              this.list = response
+              this.findAll()
+            })
+        }
+      })
     },
     edit: function (row) {
       this.$axios.post('Issue_position/update', this.issue_position)
@@ -257,6 +292,26 @@ export default {
     // 设置指定行、列、具体单元格颜色
     cellStyle () {
       return 'background:#545c64;color:white'
+    },
+    setStatus: function (row) {
+      console.log(row.iss_id)
+      this.$axios.post('Issue_position/updzt1', row)
+        .then(response => {
+          if (response > 0) {
+            console.info(response)
+            this.$message({
+              message: '修改成功',
+              type: 'success'
+            })
+            this.findAll()
+          } else {
+            console.info(response)
+            this.$message({
+              message: '修改失败！',
+              type: 'error'
+            })
+          }
+        })
     }
   }
 }

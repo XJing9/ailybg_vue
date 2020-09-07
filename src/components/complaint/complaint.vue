@@ -9,9 +9,9 @@
     </el-select>
 
     <el-input prop="com_phone" v-model="com_phone" type="text" placeholder="请输入" style="width:200px;height:30px;"></el-input>
-    <el-button @click="findAll()">搜索</el-button>
-    <el-button type="text" @click="showDialog1()">添加</el-button>
-    <el-button type="text" @click="listquanbu()">全部</el-button>
+    <el-button @click="findAll()" type="primary">搜索</el-button>
+    <!--<el-button type="text" @click="showDialog1()">添加</el-button>-->
+    <el-button  @click="listquanbu()" type="primary">全部</el-button>
     <!-- data:绑定数据  height:声明之后会固定表头-->
     <el-table :data="pageInfo.slice((currentPage-1)*PageSize,currentPage*PageSize) " style="width: 100%;margin-bottom: 20px;"
               :header-cell-style="rowClass"
@@ -50,8 +50,12 @@
       <el-table-column prop="com_remark" label="备注说明"></el-table-column>
       <el-table-column label="操作" fixed="right" width="100px">
         <template slot-scope="scope">
-          <el-button type="text" @click="showDialog(scope.row)">修改</el-button>
-          <el-button type="text" @click="deleleById(scope.row)">删除</el-button>
+          <el-button style="background-color:darkgrey;border-color: darkgrey" type="primary" size="mini" icon="el-icon-edit" @click="showDialog(scope.row)">修改</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" fixed="right" width="100px">
+        <template slot-scope="scope">
+          <el-button type="danger" size="mini" class="el-icon-delete" @click="deleleById(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -257,6 +261,8 @@ export default {
       this.$axios.post('Complaint/showlist1').then(response => {
         this.pageInfo = response
         this.total = this.pageInfo.length
+        this.cau_id = ''
+        this.com_phone = ''
       })
     },
     findcus: function () {
